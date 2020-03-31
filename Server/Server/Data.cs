@@ -9,8 +9,6 @@ namespace Server
 {
     static public class Data
     {
-        static public object Settings { get; set; }//Настройки
-
         //Прочее
 
         public struct ClientConnectOnly//инфа о клиенте (онлайн)
@@ -19,17 +17,20 @@ namespace Server
             public int ID;
         }
 
+        /*
         public struct ClientConnectOffline//инфа о клиенте (офнлайн)
         {
             public int ID;
             public string Email;
             public string Passworld;
         }
+        
 
         public struct GeneralChatMess//Сообщение для клиента (Общий чат)
         {
             public int ID;
             public string Text;
         }
+        */
     }
 }
