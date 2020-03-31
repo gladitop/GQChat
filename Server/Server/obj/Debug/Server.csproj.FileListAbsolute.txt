@@ -1,0 +1,10 @@
+C:\Users\damal\Google Диск\TCPChat\Server\Server\obj\Debug\Server.csprojAssemblyReference.cache
+C:\Users\damal\Google Диск\TCPChat\Server\Server\obj\Debug\Server.csproj.CoreCompileInputs.cache
+C:\Users\damal\Google Диск\TCPChat\Server\Server\bin\Debug\Server.exe.config
+C:\Users\damal\Google Диск\TCPChat\Server\Server\bin\Debug\Server.exe
+C:\Users\damal\Google Диск\TCPChat\Server\Server\bin\Debug\Server.pdb
+C:\Users\damal\Google Диск\TCPChat\Server\Server\bin\Debug\Newtonsoft.Json.dll
+C:\Users\damal\Google Диск\TCPChat\Server\Server\bin\Debug\Newtonsoft.Json.xml
+C:\Users\damal\Google Диск\TCPChat\Server\Server\obj\Debug\Server.csproj.CopyComplete
+C:\Users\damal\Google Диск\TCPChat\Server\Server\obj\Debug\Server.exe
+C:\Users\damal\Google Диск\TCPChat\Server\Server\obj\Debug\Server.pdb
