@@ -11,11 +11,9 @@ namespace Server
     {
         public const string ConnectCmd = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=Database.mdb;";
 
-        static public string GetClientInfo(string email, string passworld)
+        static public Data.ClientConnectOnly GetClientInfo(string email, string passworld)//TODO
         {
-
-
-            return "";
+            return new Data.ClientConnectOnly(new System.Net.Sockets.TcpClient(), "", "");
         }
 
         static public bool CheckClientPassworld(string passworld)//Проверка пароля аккаунта
@@ -44,7 +42,7 @@ namespace Server
                 connection.Open();
 
                 OleDbCommand command = new OleDbCommand($"SELECT ACC FROM Account WHERE Email = {email}", connection);
-                string answer = command.ExecuteReader().ToString();
+                command.ExecuteReader().ToString();
                 connection.Close();
                 return true;
             }
@@ -54,16 +52,28 @@ namespace Server
             }
         }
 
-        static public void AccountAdd(string email, string passworld)//Добавить в аккаунт
+        static public int GetLastIdAccount()
         {
             OleDbConnection connection = new OleDbConnection(ConnectCmd);
             connection.Open();
 
-            OleDbCommand command = new OleDbCommand($"INSERT INTO Accounts (Email, Passworld) " +
-                $"VALUES ({email}, {passworld})", connection);
+            OleDbCommand command = new OleDbCommand($"SELECT COUNT(*) FROM Account", connection);
+            int answer = int.Parse(command.ExecuteReader().ToString());
             connection.Close();
 
+            return ++answer;
+        }
+
+        static public void AccountAdd(string email, string passworld, string nick, int id)//Добавить в аккаунт
+        {
+            OleDbConnection connection = new OleDbConnection(ConnectCmd);
+            connection.Open();
+
+            OleDbCommand command = new OleDbCommand($"INSERT INTO Accounts (ID, Email, Passworld, Nick) " +
+                $"VALUES ({id}, {email}, {passworld}, {nick})", connection);
+
             command.ExecuteNonQuery();
+            connection.Close();
         }
     }
 }

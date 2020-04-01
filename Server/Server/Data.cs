@@ -13,22 +13,17 @@ namespace Server
 
         //Прочее
 
-        public class ClientConnectOnly//инфа о клиенте (онлайн)
+        public class ClientConnectOnly//инфа о клиенте (онлайн) (ТОЛЬКО ДЛЯ СЕРВЕРА)
         {
-            public ClientConnectOnly(TcpClient tcpClient, string email, string nick,
-                string passworld, int id)
+            public ClientConnectOnly(TcpClient tcpClient, string email, string passworld)
             {
                 ClientSocket = tcpClient;
-                ID = id;
                 Email = email;
-                Nick = nick;
                 Passworld = passworld;
             }
 
             public TcpClient ClientSocket { get; set; }
-            public int ID { get; set; }
             public string Email { get; set; }
-            public string Nick { get; set; }
             public string Passworld { get; set; }
         }
 
