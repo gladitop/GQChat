@@ -30,7 +30,14 @@
 |-----------------------------------|--------------------------------|-------|
 | `SharpCompress`           | Это библиотека для RAR| [![sharpcompress](https://img.shields.io/nuget/vpre/sharpcompress.svg)](https://www.nuget.org/packages/sharpcompress) |
 
+# Папки
+
+| Название папки | Описание	    			     |
+|----------------|-------------------------|
+| `Client`       | Клиент для чата         |
+| `Server`       | Сервер для чата         |
+
 # Авторы
 
 1. [Gladi](https://github.com/damiralmaev) `Самый главный (коммунист)`
-2. [Qliook]() `Антикоммунист`
+2. [Qliook](https://github.com/Qliook) `Антикоммунист`
