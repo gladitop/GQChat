@@ -13,16 +13,17 @@ namespace Server
 {
     class Program
     {
-        static Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        static TcpListener server = new TcpListener(IPAddress.Any, 908);
         static StreamWriter sw = new StreamWriter("Log.txt");
+        static NetworkStream networkStream;
 
         static void Main(string[] args)
         {
             Console.Title = "Server";
             WriteLine("Загрузка сервера...", ConsoleColor.Yellow);
             sw.AutoFlush = true;
-            server.Bind(new IPEndPoint(IPAddress.Any, 908));
-            server.Listen(99999);
+            server.Start();
+            networkStream = new NetworkStream(server.Server);
 
             Thread thread = new Thread(new ThreadStart(NewConnect));
             thread.IsBackground = true;
@@ -36,9 +37,11 @@ namespace Server
         static void CheckNewConnect(object i)
         {
             byte[] buffer = new byte[1024];
-            Socket client = (Socket)i;
+            TcpClient client = (TcpClient)i;
+            NetworkStream networkClient = client.GetStream();
+            //TODO
 
-            int messi = client.Receive(buffer);
+            int messi = client.(buffer);
 
             //Провека проги
             if (Encoding.UTF8.GetString(buffer, 0, messi) != "TCPCHAT 1.0")
@@ -53,7 +56,7 @@ namespace Server
             while (true)
             {
                 Task.Delay(10).Wait();
-
+                
                 messi = client.Receive(buffer);
 
                 if (Encoding.UTF8.GetString(buffer) == "REG")//регистрация
@@ -79,7 +82,7 @@ namespace Server
             {
                 try
                 {
-                    Socket client = server.Accept();
+                    TcpClient client = server.AcceptTcpClient();
                     Thread thread = new Thread(new ParameterizedThreadStart(CheckNewConnect));
                     thread.Start(client);
                 }
