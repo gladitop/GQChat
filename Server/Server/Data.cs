@@ -9,12 +9,27 @@ namespace Server
 {
     static public class Data
     {
+        static public List<ClientConnectOnly> ClientsOnlyData { get; set; } = new List<ClientConnectOnly>();
+
         //Прочее
 
-        public struct ClientConnectOnly//инфа о клиенте (онлайн)
+        public class ClientConnectOnly//инфа о клиенте (онлайн)
         {
-            public Socket ClientSocket;
-            public int ID;
+            public ClientConnectOnly(TcpClient tcpClient, string email, string nick,
+                string passworld, int id)
+            {
+                ClientSocket = tcpClient;
+                ID = id;
+                Email = email;
+                Nick = nick;
+                Passworld = passworld;
+            }
+
+            public TcpClient ClientSocket { get; set; }
+            public int ID { get; set; }
+            public string Email { get; set; }
+            public string Nick { get; set; }
+            public string Passworld { get; set; }
         }
 
         /*

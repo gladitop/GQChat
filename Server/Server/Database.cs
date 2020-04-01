@@ -11,22 +11,50 @@ namespace Server
     {
         public const string ConnectCmd = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=Database.mdb;";
 
-        static public bool CheckClient(int id)
+        static public string GetClientInfo(string email, string passworld)
         {
-            OleDbConnection connection = new OleDbConnection(ConnectCmd);
-            connection.Open();
 
-            OleDbCommand command = new OleDbCommand($"SELECT ACC FROM Accounts WHERE ID = {id}", connection);
-            string answer = command.ExecuteReader().ToString();
-            connection.Close();
 
-            if (string.IsNullOrWhiteSpace(answer))
-                return false;
-            else
-                return true;
+            return "";
         }
 
-        static public void AccountAdd(string email, string passworld)
+        static public bool CheckClientPassworld(string passworld)//Проверка пароля аккаунта
+        {
+            try
+            {
+                OleDbConnection connection = new OleDbConnection(ConnectCmd);
+                connection.Open();
+
+                OleDbCommand command = new OleDbCommand($"SELECT ACC FROM Account WHERE Passworld = {passworld}", connection);
+                command.ExecuteReader().ToString();
+                connection.Close();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        static public bool CheckClientEmail(string email)//Проверка email
+        {
+            try
+            {
+                OleDbConnection connection = new OleDbConnection(ConnectCmd);
+                connection.Open();
+
+                OleDbCommand command = new OleDbCommand($"SELECT ACC FROM Account WHERE Email = {email}", connection);
+                string answer = command.ExecuteReader().ToString();
+                connection.Close();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        static public void AccountAdd(string email, string passworld)//Добавить в аккаунт
         {
             OleDbConnection connection = new OleDbConnection(ConnectCmd);
             connection.Open();

@@ -34,20 +34,32 @@ namespace Server
             Environment.Exit(0);
         }
 
+        static void MessagesClient(Data.ClientConnectOnly clientInfo)
+        { 
+
+            while (true)
+            {
+                Task.Delay(10).Wait();
+
+
+            }
+        }
+
         static void CheckNewConnect(object i)
         {
             byte[] buffer = new byte[1024];
             TcpClient client = (TcpClient)i;
             NetworkStream networkClient = client.GetStream();
-            //TODO
 
-            int messi = client.(buffer);
+            //Task.Delay(30).Wait();//Ждём отправки сообщения
+            int messi = networkClient.Read(buffer, 0, buffer.Length);
 
             //Провека проги
             if (Encoding.UTF8.GetString(buffer, 0, messi) != "TCPCHAT 1.0")
             {
                 WriteLine("Ошибка: Cтарый или другой клиент!", ConsoleColor.Red);
                 client.Close();
+                networkClient.Close();
                 return;//Проверить!
             }
 
@@ -56,22 +68,71 @@ namespace Server
             while (true)
             {
                 Task.Delay(10).Wait();
-                
-                messi = client.Receive(buffer);
-
-                if (Encoding.UTF8.GetString(buffer) == "REG")//регистрация
+                try
                 {
-                    //email
 
-                    //пароль
+                linkCommand:
+
+                    //messi = client.Receive(buffer);
+                    messi = networkClient.Read(buffer, 0, buffer.Length);
+
+                    if (Encoding.UTF8.GetString(buffer) == "REG")//регистрация
+                    {
+                        //email
+
+                        //пароль
+                    }
+                    else if (Encoding.UTF8.GetString(buffer) == "LOG")//Вход
+                    {
+                        //email
+
+                        messi = networkClient.Read(buffer, 0, buffer.Length);
+                        string email = Encoding.UTF8.GetString(buffer, 0, messi);
+
+                        //пароль
+
+                        messi = networkClient.Read(buffer, 0, buffer.Length);
+                        string passworld = Encoding.UTF8.GetString(buffer, 0, messi);
+
+                        //Проверка email
+
+                        bool checkClient = Database.CheckClientEmail(email);
+
+                        if (!checkClient)
+                        {
+                            networkClient.Write(Encoding.UTF8.GetBytes("0"), 0, buffer.Length);
+                            goto linkCommand;
+                        }
+                        else
+                        {
+                            //Проверка пароля
+
+                            networkClient.Write(Encoding.UTF8.GetBytes("1"), 0, buffer.Length);
+                            bool checkPassworld = Database.CheckClientPassworld(passworld);
+
+                            if (!checkPassworld)
+                            {
+                                networkClient.Write(Encoding.UTF8.GetBytes("0"), 0, buffer.Length);
+                                goto linkCommand;
+                            }
+                            else
+                            {
+                                networkClient.Write(Encoding.UTF8.GetBytes("1"), 0, buffer.Length);
+
+                                //Инцилизация!
+
+                                //TODO
+                                //Data.ClientsOnlyData.Add(new Data.ClientConnectOnly { ClientSocket = client,
+                                //Email = email, Passworld = passworld, Nick = });
+
+                                return;
+                            }
+                        }
+                    }
                 }
-                else if (Encoding.UTF8.GetString(buffer) == "LOG")//Вход
+                catch
                 {
-
-                }
-                else if (Encoding.UTF8.GetString(buffer) == "MES")//Сообщение
-                {
-
+                    WriteLine("Error: Клиент!", ConsoleColor.Red);
                 }
             }
         }
