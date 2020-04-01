@@ -13,7 +13,7 @@
 * [Использовано](https://github.com/damiralmaev/GQChat#%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D0%BD%D0%BE)
     * [NuGet пакеты](https://github.com/damiralmaev/GQChat#nuget-%D0%BF%D0%B0%D0%BA%D0%B5%D1%82%D1%8B)
 * [Папки](https://github.com/damiralmaev/GQChat#%D0%BF%D0%B0%D0%BF%D0%BA%D0%B8)
-* [Лицензия]()
+* [Лицензия](https://github.com/damiralmaev/GQChat#%D0%BB%D0%B8%D1%86%D0%B5%D0%BD%D0%B7%D0%B8%D1%8F)
 * [Авторы](https://github.com/damiralmaev/GQChat#%D0%B0%D0%B2%D1%82%D0%BE%D1%80%D1%8B)
 
 # Описание
