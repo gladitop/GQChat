@@ -26,7 +26,7 @@ public class Client : MonoBehaviour
 
         //Defalt host / post values
         string host = "127.0.0.1";
-        int port = 6321;
+        int port = 908;
 
         // Overwrite default host / port values, if there is something in those boxes
         string h;
@@ -76,6 +76,7 @@ public class Client : MonoBehaviour
 
         GameObject go = Instantiate(messagePrefab, chatContainer.transform);
         go.GetComponentInChildren<Text>().text = data;
+        Destroy(go, 10);
     }
 
     private void Send(string data)
@@ -90,6 +91,7 @@ public class Client : MonoBehaviour
     public void OnSendButton()
     {
         string message = GameObject.Find("SendInput").GetComponent<InputField>().text;
+        GameObject.Find("SendInput").GetComponent<InputField>().text = "";
         Send(message);
     }
 
