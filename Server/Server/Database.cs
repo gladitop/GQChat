@@ -7,7 +7,7 @@ using System.Data.OleDb;
 
 namespace Server
 {
-    static public class Database
+    static public class Database///TODO Проверить команды sql
     {
         public const string ConnectCmd = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=Database.mdb;";
 

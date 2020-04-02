@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using System.IO;
 using System.Threading;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace Server
 {
@@ -35,13 +36,16 @@ namespace Server
         }
 
         static void MessagesClient(object i)
-        { 
+        {
+            Data.ClientConnectOnly onlyClient = (Data.ClientConnectOnly)i;
+            byte[] buffer = new byte[1024];
+            int messi;
 
             while (true)
             {
                 Task.Delay(10).Wait();
 
-
+                messi = onlyClient.ClientSocket.Client.Receive(buffer);
             }
         }
 
@@ -85,23 +89,24 @@ namespace Server
                     //messi = client.Receive(buffer);
                     messi = client.Client.Receive(buffer);
 
-                    if (Encoding.UTF8.GetString(buffer, 0, messi) == "REG")//регистрация
+                    if (Encoding.UTF8.GetString(buffer, 0, messi).Contains("%REG"))//регистрация
                     {
                         //email
+                        string answer = Encoding.UTF8.GetString(buffer, 0, messi);
 
-                        messi = client.Client.Receive(buffer);
-                        string email = Encoding.UTF8.GetString(buffer, 0, messi);
+                        Match regex = Regex.Match(answer, "%REG:(.*):(.*):(.*)");//Антон!
+                        string email = regex.Groups[1].Value;
+
+                        //string email = answer.
                         //TODO: Сделать проверку email через подтверждение (Нужен smtp сервер)
 
                         //пароль
 
-                        messi = client.Client.Receive(buffer);
-                        string passworld = Encoding.UTF8.GetString(buffer, 0, messi);//TODO: Нужен md5
+                        string passworld = regex.Groups[3].Value;//TODO: Нужен md5
 
                         //Nick
 
-                        messi = client.Client.Receive(buffer);
-                        string nick = Encoding.UTF8.GetString(buffer, 0, messi);
+                        string nick = regex.Groups[5].Value;
 
                         //Проверка
 
@@ -109,7 +114,7 @@ namespace Server
 
                         if (checkNewAccount)
                         {
-                            client.Client.Send(Encoding.UTF8.GetBytes("0"));
+                            client.Client.Send(Encoding.UTF8.GetBytes("%REG:MESSAGES:Такой email уже используется"));
                             goto linkCommand;
                         }
                         else
@@ -121,17 +126,17 @@ namespace Server
                             return;
                         }
                     }
-                    else if (Encoding.UTF8.GetString(buffer, 0, messi) == "LOG")//Вход
+                    else if (Encoding.UTF8.GetString(buffer, 0, messi).Contains("%LOG"))//Вход
                     {
                         //email
+                        string answer = Encoding.UTF8.GetString(buffer, 0, messi);
 
-                        messi = client.Client.Receive(buffer);
-                        string email = Encoding.UTF8.GetString(buffer, 0, messi);
+                        Match regex = Regex.Match(answer, "%LOG:(.*):(.*)");//Антон!
+                        string email = regex.Groups[1].Value;
 
                         //пароль
 
-                        messi = client.Client.Receive(buffer);
-                        string passworld = Encoding.UTF8.GetString(buffer, 0, messi);
+                        string passworld = regex.Groups[3].Value;
 
                         //Проверка email
 
@@ -140,19 +145,18 @@ namespace Server
                         if (!checkClient)
                         {
                             //networkClient.Write(Encoding.UTF8.GetBytes("0"), 0, buffer.Length);
-                            client.Client.Send(Encoding.UTF8.GetBytes("0"));// False
+                            client.Client.Send(Encoding.UTF8.GetBytes("%LOG:MESSAGES:Неверный пароль или email"));// False
                             goto linkCommand;
                         }
                         else
                         {
                             //Проверка пароля
 
-                            client.Client.Send(Encoding.UTF8.GetBytes("1"));// True
                             bool checkPassworld = Database.CheckClientPassworld(passworld);
 
                             if (!checkPassworld)
                             {
-                                client.Client.Send(Encoding.UTF8.GetBytes("0"));
+                                client.Client.Send(Encoding.UTF8.GetBytes("%LOG:MESSAGES:Неверный пароль или email"));
                                 goto linkCommand;
                             }
                             else
