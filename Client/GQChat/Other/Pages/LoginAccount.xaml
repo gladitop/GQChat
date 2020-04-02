@@ -11,11 +11,12 @@
     <Grid>
         <Label Content="GQChat" FontSize="50" HorizontalAlignment="Left" Margin="65,10,0,0" VerticalAlignment="Top"/>
         <Label Content="Вход" HorizontalAlignment="Left" Margin="225,68,0,0" VerticalAlignment="Top"/>
-        <TextBox FontSize="20" HorizontalAlignment="Left" Height="28" Margin="103,151,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="204"/>
+        <TextBox x:Name="tbEmail" FontSize="20" HorizontalAlignment="Left" Height="28" Margin="103,151,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="204"/>
         <Label Content="Email:" FontSize="30" HorizontalAlignment="Left" Margin="7,139,0,0" VerticalAlignment="Top"/>
-        <PasswordBox FontSize="20" HorizontalAlignment="Left" Height="28" Margin="103,221,0,0" VerticalAlignment="Top" Width="204"/>
+        <PasswordBox x:Name="tbPassworld" FontSize="20" HorizontalAlignment="Left" Height="28" Margin="103,221,0,0" VerticalAlignment="Top" Width="204"/>
         <Label Content="Pass:" FontSize="30" HorizontalAlignment="Left" Margin="7,209,0,0" VerticalAlignment="Top"/>
-        <Button Content="Вход" FontSize="25" HorizontalAlignment="Left" Margin="103,295,0,0" VerticalAlignment="Top" Width="116" Height="35"/>
+        <Button x:Name="btLogin" Content="Вход" FontSize="25" HorizontalAlignment="Left" Margin="103,295,0,0" VerticalAlignment="Top" Width="116" Height="35" Click="btLogin_Click"/>
+        <Button x:Name="btReg" Content="Регистрация" Foreground="Blue" HorizontalAlignment="Left" Margin="240,359,0,0" VerticalAlignment="Top" Click="btReg_Click"/>
 
     </Grid>
 </Page>

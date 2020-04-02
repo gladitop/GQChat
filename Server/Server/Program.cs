@@ -1,32 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.IO;
-using System.Threading;
-using System.Diagnostics;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Server
 {
-    class Program
+    internal class Program
     {
-        static TcpListener server = new TcpListener(IPAddress.Any, 908);
-        static StreamWriter sw = new StreamWriter("Log.txt");
+        private static readonly TcpListener server = new TcpListener(IPAddress.Any, 908);
+        private static readonly StreamWriter sw = new StreamWriter("Log.txt");
+
         //static NetworkStream networkStream;
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Console.Title = "Server";
             WriteLine("Загрузка сервера...", ConsoleColor.Yellow);
             sw.AutoFlush = true;
             server.Start();
 
-            Thread thread = new Thread(new ThreadStart(NewConnect));
-            thread.IsBackground = true;
+            Thread thread = new Thread(new ThreadStart(NewConnect))
+            {
+                IsBackground = true
+            };
             thread.Start();
 
             WriteLine("Сервер запущен!", ConsoleColor.Green);
@@ -35,19 +35,19 @@ namespace Server
             Environment.Exit(0);
         }
 
-        static void UpdateMessages(string text, Data.ClientConnectOnly onlyClient)//Для общего чата
+        private static void UpdateMessages(string text, Data.ClientConnectOnly onlyClient)//Для общего чата
         {
             try
             {
                 WriteLine($"Cообщение в общий чат: {onlyClient.Nick}:{text}", ConsoleColor.Green);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 WriteLine($"Ошибка в общем чате: {ex.Message}", ConsoleColor.Red);
             }
         }
 
-        static void MessagesClient(object i)
+        private static void MessagesClient(object i)
         {
             Data.ClientConnectOnly onlyClient = (Data.ClientConnectOnly)i;
             byte[] buffer = new byte[1024];
@@ -69,7 +69,7 @@ namespace Server
                         Match regex = Regex.Match(answer, "%MES:(.*)");
                         string messagesText = regex.Groups[1].Value;
 
-                        
+
                     }
                     else if (answer.Contains("%NCT"))//Новый чат
                     {
@@ -80,7 +80,7 @@ namespace Server
 
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     onlyClient.ClientSocket.Close();
                     Data.ClientsOnlyData.Remove(onlyClient);
@@ -90,8 +90,9 @@ namespace Server
             }
         }
 
-        static void CheckNewConnect(object i)
+        private static void CheckNewConnect(object i)
         {
+            WriteLine("Новое подключение!", ConsoleColor.Green);
             byte[] buffer = new byte[1024];
             TcpClient client = (TcpClient)i;
             //NetworkStream networkClient = client.GetStream();
@@ -143,11 +144,11 @@ namespace Server
 
                         //пароль
 
-                        string passworld = regex.Groups[3].Value;//TODO: Нужен md5
+                        string passworld = regex.Groups[2].Value;//TODO: Нужен md5
 
                         //Nick
 
-                        string nick = regex.Groups[5].Value;
+                        string nick = regex.Groups[3].Value;
 
                         //Проверка
 
@@ -177,7 +178,7 @@ namespace Server
 
                         //пароль
 
-                        string passworld = regex.Groups[3].Value;
+                        string passworld = regex.Groups[2].Value;
 
                         //Проверка email
 
@@ -206,12 +207,14 @@ namespace Server
 
                                 //Инцилизация!
 
-                                Data.ClientConnectOnly onlyClient = new Data.ClientConnectOnly(client, 
-                                    Database.GetNickClient(email),email, passworld);
+                                Data.ClientConnectOnly onlyClient = new Data.ClientConnectOnly(client,
+                                    Database.GetNickClient(email), email, passworld);
                                 Data.ClientsOnlyData.Add(onlyClient);
 
-                                Thread thread = new Thread(new ParameterizedThreadStart(MessagesClient));
-                                thread.IsBackground = true;
+                                Thread thread = new Thread(new ParameterizedThreadStart(MessagesClient))
+                                {
+                                    IsBackground = true
+                                };
                                 thread.Start(onlyClient);
                                 WriteLine($"Вход аккаунт! {email}, {passworld}", ConsoleColor.Green);
 
@@ -229,7 +232,7 @@ namespace Server
             }
         }
 
-        static void NewConnect()
+        private static void NewConnect()
         {
             while (true)
             {
@@ -243,7 +246,7 @@ namespace Server
             }
         }
 
-        static void WriteLine(string text, ConsoleColor color)
+        private static void WriteLine(string text, ConsoleColor color)
         {
             Console.ForegroundColor = color;
             Console.WriteLine(text);

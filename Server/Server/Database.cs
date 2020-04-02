@@ -1,41 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data.OleDb;
+﻿using System.Data.OleDb;
 
 namespace Server
 {
-    static public class Database///TODO Проверить команды sql
+    public static class Database///TODO Проверить команды sql
     {
         public const string ConnectCmd = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=Database.mdb;";
 
-        static public string GetNickClient(string email)
+        public static string GetNickClient(string email)
         {
             OleDbConnection connection = new OleDbConnection(ConnectCmd);
             connection.Open();
 
-            OleDbCommand command = new OleDbCommand($"SELECT Nick FROM Account WHERE Email = {email}", connection);
+            OleDbCommand command = new OleDbCommand($"SELECT * FROM Accounts WHERE Email = {email}", connection);
             string answer = command.ExecuteReader().ToString();
             connection.Close();
 
             return answer;
         }
 
-        static public void GetClientInfo(string email, string passworld)//TODO
+        public static void GetClientInfo(string email, string passworld)//TODO
         {
-            
+
         }
 
-        static public bool CheckClientPassworld(string passworld)//Проверка пароля аккаунта
+        public static bool CheckClientPassworld(string passworld)//Проверка пароля аккаунта
         {
             try
             {
                 OleDbConnection connection = new OleDbConnection(ConnectCmd);
                 connection.Open();
 
-                OleDbCommand command = new OleDbCommand($"SELECT ACC FROM Account WHERE Passworld = {passworld}", connection);
+                OleDbCommand command = new OleDbCommand($"SELECT * FROM Accounts WHERE Passworld = {passworld}", connection);
                 command.ExecuteReader().ToString();
                 connection.Close();
                 return true;
@@ -48,14 +43,14 @@ namespace Server
             //P.S. Если он нечего не найдёт, то будет исключение
         }
 
-        static public bool CheckClientEmail(string email)//Проверка email
+        public static bool CheckClientEmail(string email)//Проверка email
         {
             try
             {
                 OleDbConnection connection = new OleDbConnection(ConnectCmd);
                 connection.Open();
 
-                OleDbCommand command = new OleDbCommand($"SELECT ACC FROM Account WHERE Email = {email}", connection);
+                OleDbCommand command = new OleDbCommand($"SELECT * FROM Accounts WHERE Email = {email}", connection);
                 command.ExecuteReader().ToString();
                 connection.Close();
                 return true;
@@ -68,19 +63,19 @@ namespace Server
             //P.S. Если он нечего не найдёт, то будет исключение
         }
 
-        static public int GetLastIdAccount()
+        public static int GetLastIdAccount()
         {
             OleDbConnection connection = new OleDbConnection(ConnectCmd);
             connection.Open();
 
-            OleDbCommand command = new OleDbCommand($"SELECT COUNT(*) FROM Account", connection);
+            OleDbCommand command = new OleDbCommand($"SELECT COUNT(*) FROM Accounts", connection);
             int answer = int.Parse(command.ExecuteReader().ToString());
             connection.Close();
 
             return ++answer;
         }
 
-        static public void AccountAdd(string email, string passworld, string nick, int id)//Добавить в аккаунт
+        public static void AccountAdd(string email, string passworld, string nick, int id)//Добавить в аккаунт
         {
             OleDbConnection connection = new OleDbConnection(ConnectCmd);
             connection.Open();

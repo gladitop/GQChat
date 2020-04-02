@@ -34,3 +34,5 @@ C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\obj\Debug\GQChat.csproj.Gen
 C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\obj\Debug\GQChat.csproj.CoreCompileInputs.cache
 C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\obj\Debug\GQChat.exe
 C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\obj\Debug\GQChat.pdb
+C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\obj\Debug\Other\Pages\RegAccount.g.cs
+C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\obj\Debug\Other\Pages\RegAccount.baml

@@ -38,11 +38,22 @@ namespace GQChat
             {
                 Task.Delay(50).Wait();
 
-                if (Data.NewPages == true)
+                this.Dispatcher.Invoke(new Action(() =>
                 {
-                    frame.Navigate(Data.Pages);
-                    Data.NewPages = false;
-                }
+                    if (Data.NewPages)
+                    {
+                        Title = Data.NameTitle;
+                        frame.Navigate(Data.Pages);
+                        Data.NewPages = false;
+                    }
+                    else if (Data.LoginSucces)
+                    {
+                        MainWindow main = new MainWindow();
+                        main.Show();
+                        Hide();
+                        return;
+                    }
+                }));
             }
         }
     }
