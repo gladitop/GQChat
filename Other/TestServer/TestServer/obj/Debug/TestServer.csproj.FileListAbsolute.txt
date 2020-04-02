@@ -4,3 +4,4 @@ C:\Users\Admin\Desktop\GQChat\Other\TestServer\TestServer\bin\Debug\TestServer.p
 C:\Users\Admin\Desktop\GQChat\Other\TestServer\TestServer\obj\Debug\TestServer.csproj.CoreCompileInputs.cache
 C:\Users\Admin\Desktop\GQChat\Other\TestServer\TestServer\obj\Debug\TestServer.exe
 C:\Users\Admin\Desktop\GQChat\Other\TestServer\TestServer\obj\Debug\TestServer.pdb
+C:\Users\Admin\Desktop\GQChat\Other\TestServer\TestServer\obj\Debug\TestServer.csprojAssemblyReference.cache

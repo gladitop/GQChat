@@ -124,17 +124,10 @@ namespace TestServer
                         Match regex = Regex.Match(answer, "%REG:(.*):(.*):(.*)");//Антон!
 
                         string email = regex.Groups[1].Value;
-                        Console.WriteLine(email);
-                        //string email = answer.
-                        //TODO: Сделать проверку email через подтверждение (Нужен smtp сервер)
-                        //пароль
-
-                        string passworld = regex.Groups[2].Value;//TODO: Нужен md5
-                        Console.WriteLine(passworld);
-                        //Nick
+                        string password = regex.Groups[2].Value;//TODO: Нужен md5
                         string nick = regex.Groups[3].Value;
-                        Console.WriteLine(nick);
-                        //Проверка
+
+                        Database.AddNewAccounts(nick, email, password);
                     }
 
                      
