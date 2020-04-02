@@ -155,7 +155,7 @@ namespace Server
 
                         if (checkNewAccount)
                         {
-                            client.Client.Send(Encoding.UTF8.GetBytes("%REG:MESSAGES:Такой email уже используется"));
+                            client.Client.Send(Encoding.UTF8.GetBytes("%REG:Такой email уже используется"));
                             goto linkCommand;
                         }
                         else
@@ -186,7 +186,7 @@ namespace Server
                         if (!checkClient)
                         {
                             //networkClient.Write(Encoding.UTF8.GetBytes("0"), 0, buffer.Length);
-                            client.Client.Send(Encoding.UTF8.GetBytes("%LOG:MESSAGES:Неверный пароль или email"));// False
+                            client.Client.Send(Encoding.UTF8.GetBytes("%LOG:Неверный пароль или email"));// False
                             goto linkCommand;
                         }
                         else
@@ -197,7 +197,7 @@ namespace Server
 
                             if (!checkPassworld)
                             {
-                                client.Client.Send(Encoding.UTF8.GetBytes("%LOG:MESSAGES:Неверный пароль или email"));
+                                client.Client.Send(Encoding.UTF8.GetBytes("%LOG:Неверный пароль или email"));
                                 goto linkCommand;
                             }
                             else
