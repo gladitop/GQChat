@@ -11,9 +11,21 @@ namespace Server
     {
         public const string ConnectCmd = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=Database.mdb;";
 
-        static public Data.ClientConnectOnly GetClientInfo(string email, string passworld)//TODO
+        static public string GetNickClient(string email)
         {
-            return new Data.ClientConnectOnly(new System.Net.Sockets.TcpClient(), "", "");
+            OleDbConnection connection = new OleDbConnection(ConnectCmd);
+            connection.Open();
+
+            OleDbCommand command = new OleDbCommand($"SELECT Nick FROM Account WHERE Email = {email}", connection);
+            string answer = command.ExecuteReader().ToString();
+            connection.Close();
+
+            return answer;
+        }
+
+        static public void GetClientInfo(string email, string passworld)//TODO
+        {
+            
         }
 
         static public bool CheckClientPassworld(string passworld)//Проверка пароля аккаунта

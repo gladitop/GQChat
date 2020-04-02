@@ -35,6 +35,18 @@ namespace Server
             Environment.Exit(0);
         }
 
+        static void UpdateMessages(string text, Data.ClientConnectOnly onlyClient)//Для общего чата
+        {
+            try
+            {
+                WriteLine($"Cообщение в общий чат: {onlyClient.Nick}:{text}", ConsoleColor.Green);
+            }
+            catch(Exception ex)
+            {
+                WriteLine($"Ошибка в общем чате: {ex.Message}", ConsoleColor.Red);
+            }
+        }
+
         static void MessagesClient(object i)
         {
             Data.ClientConnectOnly onlyClient = (Data.ClientConnectOnly)i;
@@ -45,7 +57,36 @@ namespace Server
             {
                 Task.Delay(10).Wait();
 
-                messi = onlyClient.ClientSocket.Client.Receive(buffer);
+                try
+                {
+                    //Пример: %MES:Hello! (Ник мы уже знаем)
+                    messi = onlyClient.ClientSocket.Client.Receive(buffer);
+                    string answer = Encoding.UTF8.GetString(buffer, 0, messi);
+
+
+                    if (answer.Contains("%MES"))//Для общего чата
+                    {
+                        Match regex = Regex.Match(answer, "%MES:(.*)");
+                        string messagesText = regex.Groups[1].Value;
+
+                        
+                    }
+                    else if (answer.Contains("%NCT"))//Новый чат
+                    {
+
+                    }
+                    else if (answer.Contains("%MSE"))//Для отдельного чата
+                    {
+
+                    }
+                }
+                catch(Exception ex)
+                {
+                    onlyClient.ClientSocket.Close();
+                    Data.ClientsOnlyData.Remove(onlyClient);
+                    WriteLine($"Клиент вышел: {ex.Message}", ConsoleColor.Red);
+                    return;
+                }
             }
         }
 
@@ -166,7 +207,7 @@ namespace Server
                                 //Инцилизация!
 
                                 Data.ClientConnectOnly onlyClient = new Data.ClientConnectOnly(client, 
-                                    email, passworld);
+                                    Database.GetNickClient(email),email, passworld);
                                 Data.ClientsOnlyData.Add(onlyClient);
 
                                 Thread thread = new Thread(new ParameterizedThreadStart(MessagesClient));

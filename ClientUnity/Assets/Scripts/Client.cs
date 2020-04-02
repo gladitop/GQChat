@@ -33,7 +33,7 @@ public class Client : MonoBehaviour
         int p;
         h = GameObject.Find("HostInput").GetComponent<InputField>().text;
         if (h != "")
-            host = h;
+            host = h;//Надо сделать сообщение!
         int.TryParse(GameObject.Find("PortInput").GetComponent<InputField>().text, out p);
         if (p != 0)
             port = p;
@@ -43,8 +43,8 @@ public class Client : MonoBehaviour
         {
             socket = new TcpClient(host, port);
             stream = socket.GetStream();
-            writer = new StreamWriter(stream);
-            reader = new StreamReader(stream);
+            writer = new StreamWriter(stream);//Это только для общего чата получать
+            reader = new StreamReader(stream);//Или для беседы
             socketReady = true;
         }
         catch(Exception e)
@@ -68,7 +68,7 @@ public class Client : MonoBehaviour
 
     private void OnIncomingData(string data)
     {
-        if (data == "%NAME")
+        if (data == "%NAME")//Пример команды: %REG:lol@gmail.com:150684:Gladi
         {
             Send("&NAME|" + clientName);        
             return;
