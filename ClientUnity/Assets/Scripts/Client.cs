@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.IO;
 using UnityEngine.UI;
 using System;
+using System.Text;
 
 public class Client : MonoBehaviour
 {
@@ -31,7 +32,7 @@ public class Client : MonoBehaviour
 
         //Defalt host / post values
         string host = "127.0.0.1";
-        int port = 908;
+        int port = 908;     
 
         // Overwrite default host / port values, if there is something in those boxes
         //string h;
@@ -56,6 +57,7 @@ public class Client : MonoBehaviour
         {
             Debug.Log("Socket error : " + e.Message);
         }
+        Send("TCPCHAT 1.0");
     }
 
     private void Update()
@@ -67,6 +69,7 @@ public class Client : MonoBehaviour
                 string data = reader.ReadLine();
                 if (data != null)
                     OnIncomingData(data);
+                Debug.Log(data);
             }
         }
     }
@@ -78,7 +81,7 @@ public class Client : MonoBehaviour
         //    Send("&NAME|" + clientName);        
         //    return;
         //}
-
+        Debug.Log(data);
         if (data.Contains("%REG"))
         {
             data.Substring(5);
@@ -115,6 +118,7 @@ public class Client : MonoBehaviour
         Pass = GameObject.Find("PassInput").GetComponent<InputField>().text;
         clientName = GameObject.Find("NickInput").GetComponent<InputField>().text;
 
+        Debug.Log(Email + Pass + clientName);
         Send($"%REG:{Email}:{Pass}:{clientName}");
         return;
     }
@@ -135,7 +139,7 @@ public class Client : MonoBehaviour
         if (!socketReady)
             return;
 
-        writer.WriteLine(data);
+        socket.Client.Send(Encoding.UTF8.GetBytes(data));
         writer.Flush();
     }
 

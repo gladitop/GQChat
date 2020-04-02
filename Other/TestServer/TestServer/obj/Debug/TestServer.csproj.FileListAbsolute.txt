@@ -1,0 +1,6 @@
+C:\Users\Admin\Desktop\GQChat\Other\TestServer\TestServer\bin\Debug\TestServer.exe.config
+C:\Users\Admin\Desktop\GQChat\Other\TestServer\TestServer\bin\Debug\TestServer.exe
+C:\Users\Admin\Desktop\GQChat\Other\TestServer\TestServer\bin\Debug\TestServer.pdb
+C:\Users\Admin\Desktop\GQChat\Other\TestServer\TestServer\obj\Debug\TestServer.csproj.CoreCompileInputs.cache
+C:\Users\Admin\Desktop\GQChat\Other\TestServer\TestServer\obj\Debug\TestServer.exe
+C:\Users\Admin\Desktop\GQChat\Other\TestServer\TestServer\obj\Debug\TestServer.pdb
