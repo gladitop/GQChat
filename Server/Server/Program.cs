@@ -107,7 +107,7 @@ namespace Server
                 {
                     WriteLine("Ошибка: Cтарый или другой клиент!", ConsoleColor.Red);
                     client.Close();
-                    return;//Проверить!
+                    return;//Проверить! (Готово)
                 }
             }
             catch
@@ -129,11 +129,11 @@ namespace Server
 
                     //messi = client.Receive(buffer);
                     messi = client.Client.Receive(buffer);
+                    string answer = Encoding.UTF8.GetString(buffer, 0, messi);
 
-                    if (Encoding.UTF8.GetString(buffer, 0, messi).Contains("%REG"))//регистрация
+                    if (answer.Contains("%REG"))//регистрация
                     {
                         //email
-                        string answer = Encoding.UTF8.GetString(buffer, 0, messi);
 
                         Match regex = Regex.Match(answer, "%REG:(.*):(.*):(.*)");//Антон!
                         string email = regex.Groups[1].Value;
@@ -167,7 +167,7 @@ namespace Server
                             return;
                         }
                     }
-                    else if (Encoding.UTF8.GetString(buffer, 0, messi).Contains("%LOG"))//Вход
+                    else if (answer.Contains("%LOG"))//Вход
                     {
                         //email
                         string answer = Encoding.UTF8.GetString(buffer, 0, messi);

@@ -44,6 +44,8 @@ namespace Server
             {
                 return false;
             }
+
+            //P.S. Если он нечего не найдёт, то будет исключение
         }
 
         static public bool CheckClientEmail(string email)//Проверка email
@@ -62,6 +64,8 @@ namespace Server
             {
                 return false;
             }
+
+            //P.S. Если он нечего не найдёт, то будет исключение
         }
 
         static public int GetLastIdAccount()

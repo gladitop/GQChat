@@ -27,21 +27,5 @@ namespace Server
             public string Email { get; set; }
             public string Passworld { get; set; }
         }
-
-        /*
-        public struct ClientConnectOffline//инфа о клиенте (офнлайн)
-        {
-            public int ID;
-            public string Email;
-            public string Passworld;
-        }
-        
-
-        public struct GeneralChatMess//Сообщение для клиента (Общий чат)
-        {
-            public int ID;
-            public string Text;
-        }
-        */
     }
 }
