@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Users\damal\source\repos\GQChat\GQChat\obj\Debug\
+C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\obj\Debug\
 GQChat
 none
 false
 DEBUG;TRACE
-C:\Users\damal\source\repos\GQChat\GQChat\App.xaml
-2445943891
+C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\App.xaml
+3-2128771303
 
-752169289
+9-17533329
 13-225162538
-LoginInAccount.xaml;MainWindow.xaml;
+LoginInAccount.xaml;MainWindow.xaml;Other\Pages\LoginAccount.xaml;
 
 True
 

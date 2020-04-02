@@ -170,7 +170,7 @@ namespace Server
                     else if (answer.Contains("%LOG"))//Вход
                     {
                         //email
-                        string answer = Encoding.UTF8.GetString(buffer, 0, messi);
+                        answer = Encoding.UTF8.GetString(buffer, 0, messi);
 
                         Match regex = Regex.Match(answer, "%LOG:(.*):(.*)");//Антон!
                         string email = regex.Groups[1].Value;

@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         Title="GQChat: Вход в аккаунт" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Height="411.081" Width="323.243">
     <Grid>
+        <Frame x:Name="frame" NavigationUIVisibility="Hidden" HorizontalAlignment="Left" Height="386" VerticalAlignment="Top" Width="317"/>
 
     </Grid>
 </Window>

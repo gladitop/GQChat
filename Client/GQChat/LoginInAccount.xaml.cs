@@ -11,6 +11,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Threading;
+using GQChat.Other.Pages;
+using GQChat.Other.Class;
 
 namespace GQChat
 {
@@ -19,9 +22,28 @@ namespace GQChat
     /// </summary>
     public partial class LoginInAccount : Window
     {
+        Thread thread;
+
         public LoginInAccount()
         {
             InitializeComponent();
+            thread = new Thread(new ThreadStart(Update));
+            thread.IsBackground = true;
+            thread.Start();
+        }
+
+        public void Update()
+        {
+            while (true)
+            {
+                Task.Delay(50).Wait();
+
+                if (Data.NewPages == true)
+                {
+                    frame.Navigate(Data.Pages);
+                    Data.NewPages = false;
+                }
+            }
         }
     }
 }

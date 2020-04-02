@@ -15,3 +15,5 @@ C:\Users\damal\Documents\GitHub\GQChat\Server\Server\obj\Debug\Server.csprojAsse
 C:\Users\damal\Documents\GitHub\GQChat\Server\Server\obj\Debug\Server.csproj.CoreCompileInputs.cache
 C:\Users\damal\Documents\GitHub\GQChat\Server\Server\obj\Debug\Server.exe
 C:\Users\damal\Documents\GitHub\GQChat\Server\Server\obj\Debug\Server.pdb
+C:\Users\damal\Documents\GitHub\GQChat\Server\Server\bin\Debug\Database.mdf
+C:\Users\damal\Documents\GitHub\GQChat\Server\Server\bin\Debug\Database_log.ldf
