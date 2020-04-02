@@ -9,8 +9,13 @@ public class Client : MonoBehaviour
 {
     public GameObject chatContainer;
     public GameObject messagePrefab;
+    public Text ErrorBoxMessage;
 
-    public string clientName;
+    public GameObject[] menu; //0-register 1-logni 2-chat
+
+    private string clientName;
+    private string Email;
+    private string Pass;
 
     private bool socketReady;
     private TcpClient socket;
@@ -29,14 +34,14 @@ public class Client : MonoBehaviour
         int port = 908;
 
         // Overwrite default host / port values, if there is something in those boxes
-        string h;
-        int p;
-        h = GameObject.Find("HostInput").GetComponent<InputField>().text;
-        if (h != "")
-            host = h;//Надо сделать сообщение!
-        int.TryParse(GameObject.Find("PortInput").GetComponent<InputField>().text, out p);
-        if (p != 0)
-            port = p;
+        //string h;
+        //int p;
+        //h = GameObject.Find("HostInput").GetComponent<InputField>().text;
+        //if (!string.IsNullOrWhiteSpace(h)) //Gladi великий чудак.
+        //    host = h;//Надо сделать сообщение!
+        //int.TryParse(GameObject.Find("PortInput").GetComponent<InputField>().text, out p);
+        //if (p != 0)
+        //    port = p;
 
         //Create the socket
         try
@@ -68,16 +73,62 @@ public class Client : MonoBehaviour
 
     private void OnIncomingData(string data)
     {
-        if (data == "%NAME")//Пример команды: %REG:lol@gmail.com:150684:Gladi
+        //if (data == "%NAME")//Пример команды: %REG:lol@gmail.com:150684:Gladi
+        //{
+        //    Send("&NAME|" + clientName);        
+        //    return;
+        //}
+
+        if (data.Contains("%REG"))
         {
-            Send("&NAME|" + clientName);        
-            return;
+            data.Substring(5);
+            ErrorBoxMessage.text = data;
+        }
+        else
+        {
+            menu[0].active = false;
+            menu[1].active = true;
+            menu[2].active = false;
+        }
+
+        if (data.Contains("%LOG"))
+        {
+            data.Substring(5);
+            ErrorBoxMessage.text = data;
+        }
+        else
+        {
+            menu[0].active = false;
+            menu[1].active = false;
+            menu[2].active = true;
         }
 
         GameObject go = Instantiate(messagePrefab, chatContainer.transform);
         go.GetComponentInChildren<Text>().text = data;
         Destroy(go, 10);
     }
+
+//\\ 
+    public void StartRegistration()
+    {
+        Email = GameObject.Find("EmailInput").GetComponent<InputField>().text;
+        Pass = GameObject.Find("PassInput").GetComponent<InputField>().text;
+        clientName = GameObject.Find("NickInput").GetComponent<InputField>().text;
+
+        Send($"%REG:{Email}:{Pass}:{clientName}");
+        return;
+    }
+
+    public void StartLogin()
+    {
+        string Email = GameObject.Find("EmailInput").GetComponent<InputField>().text;
+        Pass = GameObject.Find("PassInput").GetComponent<InputField>().text;
+        GameObject.Find("PassInput").GetComponent<InputField>().text = "";
+
+        Send($"%LOG:{Email}:{Pass}");     
+        return;
+    }
+//\\
 
     private void Send(string data)
     {
