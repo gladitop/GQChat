@@ -25,6 +25,7 @@
 * Visual Studio 2019
 * .Net Framework 4.8
 * WPF
+* Unity ***(Меня составил*** [Qliook](https://github.com/Qliook)***)***
 
 ## NuGet пакеты
 
@@ -34,12 +35,16 @@
 
 # Папки
 
-| Название папки | Описание	    			     |
+| Название папки | Описание	    		   |
 |----------------|-------------------------|
 | `Client`       | Клиент для чата         |
 | `Server`       | Сервер для чата         |
+| `ClientUnity`  | Клиент для чата (Unity) |
+| `Other`        | Разное                  |
 
 # Лицензия
+
+***GUI***
 ```
 Permissions of this strong copyleft license are conditioned
 on making available complete source code of licensed works
