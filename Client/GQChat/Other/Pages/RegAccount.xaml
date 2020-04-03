@@ -17,8 +17,9 @@
         <Label Content="Pass:" FontSize="30" HorizontalAlignment="Left" Margin="7,193,0,0" VerticalAlignment="Top"/>
         <Button x:Name="btReg" Content="Регистрация" FontSize="25" HorizontalAlignment="Left" Margin="89,310,0,0" VerticalAlignment="Top" Width="156" Height="35" Click="btReg_Click"/>
         <Button x:Name="btLog" Content="Вход" Foreground="Blue" HorizontalAlignment="Left" Margin="279,359,0,0" VerticalAlignment="Top"/>
-        <TextBlock x:Name="tbNick" FontSize="20" HorizontalAlignment="Left" Height="28" Margin="103,262,0,0" VerticalAlignment="Top" Width="204"/>
+      
         <Label Content="Nick:" FontSize="30" HorizontalAlignment="Left" Margin="7,250,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="tbNick" FontSize="20" HorizontalAlignment="Left" Height="28" Margin="103,260,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="204"/>
 
     </Grid>
 </Page>

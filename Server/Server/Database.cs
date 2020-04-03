@@ -1,8 +1,9 @@
-﻿using System.Data.OleDb;
+﻿using System;
+using System.Data.OleDb;
 
 namespace Server
 {
-    public static class Database///TODO Проверить команды sql
+    public static class Database///TODO Проверить команды sql (готово)
     {
         public const string ConnectCmd = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=Database.mdb;";
 
@@ -11,7 +12,7 @@ namespace Server
             OleDbConnection connection = new OleDbConnection(ConnectCmd);
             connection.Open();
 
-            OleDbCommand command = new OleDbCommand($"SELECT * FROM Accounts WHERE Email = {email}", connection);
+            OleDbCommand command = new OleDbCommand($"SELECT Nick FROM Accounts WHERE Email = {email}", connection);
             string answer = command.ExecuteReader().ToString();
             connection.Close();
 
@@ -23,14 +24,14 @@ namespace Server
 
         }
 
-        public static bool CheckClientPassworld(string passworld)//Проверка пароля аккаунта
+        public static bool CheckClientPassworld(string email)//Проверка пароля аккаунта
         {
             try
             {
                 OleDbConnection connection = new OleDbConnection(ConnectCmd);
                 connection.Open();
 
-                OleDbCommand command = new OleDbCommand($"SELECT * FROM Accounts WHERE Passworld = {passworld}", connection);
+                OleDbCommand command = new OleDbCommand($"SELECT Password FROM Accounts WHERE Email = {email}", connection);
                 command.ExecuteReader().ToString();
                 connection.Close();
                 return true;
@@ -50,41 +51,48 @@ namespace Server
                 OleDbConnection connection = new OleDbConnection(ConnectCmd);
                 connection.Open();
 
-                OleDbCommand command = new OleDbCommand($"SELECT * FROM Accounts WHERE Email = {email}", connection);
+                OleDbCommand command = new OleDbCommand($"SELECT UserId FROM Accounts WHERE Email = {email}", connection);
                 command.ExecuteReader().ToString();
                 connection.Close();
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                //Console.WriteLine(ex.Message);
                 return false;
             }
 
             //P.S. Если он нечего не найдёт, то будет исключение
         }
 
-        public static int GetLastIdAccount()
+        public static long GetLastIdAccount()//Error!
         {
             OleDbConnection connection = new OleDbConnection(ConnectCmd);
             connection.Open();
 
-            OleDbCommand command = new OleDbCommand($"SELECT COUNT(*) FROM Accounts", connection);
-            int answer = int.Parse(command.ExecuteReader().ToString());
+            OleDbCommand command = new OleDbCommand($"SELECT LAST_INSERT_ID(Accounts)", connection);
+            long answer = long.Parse(command.ExecuteReader().ToString());
             connection.Close();
 
-            return ++answer;
+            return answer;
         }
 
-        public static void AccountAdd(string email, string passworld, string nick, int id)//Добавить в аккаунт
+        public static void AccountAdd(string email, string passworld, string nick, long id)//Добавить в аккаунт
         {
-            OleDbConnection connection = new OleDbConnection(ConnectCmd);
-            connection.Open();
+            try
+            {
+                OleDbConnection connection = new OleDbConnection(ConnectCmd);
+                connection.Open();
 
-            OleDbCommand command = new OleDbCommand($"INSERT INTO Accounts (ID, Email, Passworld, Nick) " +
-                $"VALUES ({id}, {email}, {passworld}, {nick})", connection);
+                OleDbCommand command = new OleDbCommand($"INSERT INTO [Accounts] (UserId, Email, Password, Nick) VALUES ({id}, '{email}', '{passworld}', '{nick}')", connection);
 
-            command.ExecuteNonQuery();
-            connection.Close();
+                command.ExecuteNonQuery();
+                connection.Close();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }

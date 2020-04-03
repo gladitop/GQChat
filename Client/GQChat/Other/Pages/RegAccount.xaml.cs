@@ -29,27 +29,27 @@ namespace GQChat.Other.Pages
 
         private void btReg_Click(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(tbEmail.Text))
+            if (string.IsNullOrWhiteSpace(tbEmail.Text))
             {
                 MessageBox.Show("Напишите email!", "GQChat: Вход", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            else if (!string.IsNullOrWhiteSpace(tbPassworld.Password))
+            else if (string.IsNullOrWhiteSpace(tbPassworld.Password))
             {
                 MessageBox.Show("Напишите пароль!", "GQChat: Вход", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            else if (!string.IsNullOrWhiteSpace(tbNick.Text))
+            else if (string.IsNullOrWhiteSpace(tbNick.Text))
             {
                 MessageBox.Show("Напишите ник!", "GQChat: Вход", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            else if (tbEmail.Text.Length <= 100)
+            else if (tbEmail.Text.Length >= 100)
             {
                 MessageBox.Show("Слишком длинный email!", "GQChat: Вход", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            else if (tbPassworld.Password.Length <= 40)
+            else if (tbPassworld.Password.Length >= 40)
             {
                 MessageBox.Show("Слишком длинный пароль!", "GQChat: Вход", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            else if (tbNick.Text.Length <= 17)
+            else if (tbNick.Text.Length >= 20)
             {
                 MessageBox.Show("Слишком длинный ник!", "GQChat: Вход", MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -57,17 +57,36 @@ namespace GQChat.Other.Pages
             {
                 using (TcpClient client = new TcpClient(Data.IpServer, Data.PortServer))
                 {
-                    byte[] buffer = new byte[1024];
-                    client.Client.Send(Encoding.UTF8.GetBytes("GQCHAT 1.0"));
-                    client.Client.Send(Encoding.UTF8.GetBytes($"%REG:{tbEmail.Text}:{tbPassworld.Password}:" +
-                        $"{tbNick.Text}"));
-                    int messi = client.Client.Receive(buffer);
-
-                    string answer = Encoding.UTF8.GetString(buffer, 0, messi);
-                    if (answer == "1")
+                    try
                     {
-                        Data.TcpClient = client;
-                        Data.LoginSucces = true;
+                        byte[] buffer = new byte[1024];
+                        client.Client.Send(Encoding.UTF8.GetBytes("TCPCHAT 1.0"));
+
+                        Task.Delay(100).Wait();
+                        if (!client.Connected)
+                        {
+                            client.Close();
+                            MessageBox.Show("Ошибка при подключение", Data.NameTitle, MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+                        }
+                        Task.Delay(100).Wait();
+
+                        client.Client.Send(Encoding.UTF8.GetBytes($"%REG:{tbEmail.Text}:{tbPassworld.Password}:" +
+                            $"{tbNick.Text}"));
+                        int messi = client.Client.Receive(buffer);
+
+                        string answer = Encoding.UTF8.GetString(buffer, 0, messi);
+                        if (answer == "1")
+                        {
+                            Data.TcpClient = client;
+                            Data.LoginSucces = true;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        client.Close();
+                        MessageBox.Show($"Описание ошибки: {ex.Message}", Data.NameTitle, MessageBoxButton.OK,
+                            MessageBoxImage.Error);
                     }
                 }
             }
