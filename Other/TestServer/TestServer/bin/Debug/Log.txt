@@ -1,2 +1,6 @@
-02.04.2020 23:29:15: Загрузка сервера...
-02.04.2020 23:29:15: Сервер запущен!
+03.04.2020 13:01:54: Загрузка сервера...
+03.04.2020 13:01:54: Сервер запущен!
+03.04.2020 13:03:44: Error: Клиент! System.Net.Sockets.SocketException (0x80004005): Удаленный хост принудительно разорвал существующее подключение
+   в System.Net.Sockets.Socket.Receive(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
+   в System.Net.Sockets.Socket.Receive(Byte[] buffer)
+   в TestServer.Program.CheckNewConnect(Object i) в C:\Users\Admin\Desktop\GQChat\Other\TestServer\TestServer\Program.cs:строка 77

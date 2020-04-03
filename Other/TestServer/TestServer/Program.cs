@@ -17,7 +17,6 @@ namespace TestServer
     {
         static TcpListener server = new TcpListener(IPAddress.Any, 908);
         static StreamWriter sw = new StreamWriter("Log.txt");
-        //static NetworkStream networkStream;
 
         static void Main(string[] args)
         {
@@ -36,7 +35,7 @@ namespace TestServer
             Environment.Exit(0);
         }
 
-        static void UpdateMessages(string text, Data.ClientConnectOnly onlyClient)//Для общего чата
+        static void UpdateMessages(string text, Data.ClientConnectOnly onlyClient)
         {
             try
             {
@@ -57,37 +56,6 @@ namespace TestServer
             while (true)
             {
                 Task.Delay(10).Wait();
-
-                try
-                {
-                    //Пример: %MES:Hello! (Ник мы уже знаем)
-                    messi = onlyClient.ClientSocket.Client.Receive(buffer);
-                    string answer = Encoding.UTF8.GetString(buffer, 0, messi);
-
-
-                    if (answer.Contains("%MES"))//Для общего чата
-                    {
-                        Match regex = Regex.Match(answer, "%MES:(.*)");
-                        string messagesText = regex.Groups[1].Value;
-
-
-                    }
-                    else if (answer.Contains("%NCT"))//Новый чат
-                    {
-
-                    }
-                    else if (answer.Contains("%MSE"))//Для отдельного чата
-                    {
-
-                    }
-                }
-                catch (Exception ex)
-                {
-                    onlyClient.ClientSocket.Close();
-                    Data.ClientsOnlyData.Remove(onlyClient);
-                    WriteLine($"Клиент вышел: {ex.Message}", ConsoleColor.Red);
-                    return;
-                }
             }
         }
 
@@ -95,13 +63,8 @@ namespace TestServer
         {
             byte[] buffer = new byte[1024];
             TcpClient client = (TcpClient)i;
-            //NetworkStream networkClient = client.GetStream();
 
-            //Task.Delay(30).Wait();//Ждём отправки сообщения
-            //int messi = networkClient.Read(buffer, 0, buffer.Length);
             int messi = client.Client.Receive(buffer);
-
-            //Команды
 
             while (true)
             {
@@ -109,28 +72,27 @@ namespace TestServer
                 try
                 {
 
-                linkCommand:
+                    linkCommand:
 
-                    //messi = client.Receive(buffer);
                     messi = client.Client.Receive(buffer);
                     string answer = Encoding.UTF8.GetString(buffer, 0, messi);
 
                     Console.WriteLine(answer);
-
+                    
                     if (answer.Contains("%REG"))//регистрация
                     {
-                        //email
-
-                        Match regex = Regex.Match(answer, "%REG:(.*):(.*):(.*)");//Антон!
+                        Match regex = Regex.Match(answer, "%REG:(.*):(.*):(.*)");
 
                         string email = regex.Groups[1].Value;
-                        string password = regex.Groups[2].Value;//TODO: Нужен md5
+                        string password = regex.Groups[2].Value;
                         string nick = regex.Groups[3].Value;
 
                         Database.AddNewAccounts(nick, email, password);
-                    }
 
-                     
+                        client.Client.Send(Encoding.UTF8.GetBytes("%REGOD:Успешная регистрация"));
+
+                        answer = "";
+                    }                    
                 }
                 catch(Exception e)
                 {

@@ -19,7 +19,7 @@ namespace TestServer
             myConnection.Open();
             //ToDo("Когда нибудь, когда сакура расцветёт в ночи отражённых лучей луны, мы перестанем нести это бремя идиотского database");
 
-            string query = "INSERT INTO [Accounts] (Acc_Nick, Acc_Email, Acc_Password) VALUES ('Михаил', 'Водитель', 'Привет')";
+            string query = $"INSERT INTO [Accounts] (Acc_Nick, Acc_Email, Acc_Password) VALUES ('{nick}', '{email}', '{password}')";
             //INSERT INTO конечный_объект [(поле1[, поле2[, …]])] VALUES (значение1[, значение2[, …])
             OleDbCommand command = new OleDbCommand(query, myConnection);
             command.ExecuteNonQuery();

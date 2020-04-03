@@ -32,17 +32,7 @@ public class Client : MonoBehaviour
 
         //Defalt host / post values
         string host = "127.0.0.1";
-        int port = 908;     
-
-        // Overwrite default host / port values, if there is something in those boxes
-        //string h;
-        //int p;
-        //h = GameObject.Find("HostInput").GetComponent<InputField>().text;
-        //if (!string.IsNullOrWhiteSpace(h)) //Gladi великий чудак.
-        //    host = h;//Надо сделать сообщение!
-        //int.TryParse(GameObject.Find("PortInput").GetComponent<InputField>().text, out p);
-        //if (p != 0)
-        //    port = p;
+        int port = 908;
 
         //Create the socket
         try
@@ -53,57 +43,41 @@ public class Client : MonoBehaviour
             reader = new StreamReader(stream);//Или для беседы
             socketReady = true;
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Debug.Log("Socket error : " + e.Message);
         }
-        Send("TCPCHAT 1.0");
     }
 
     private void Update()
     {
-        if(socketReady)
+        if (socketReady)
         {
-            if(stream.DataAvailable)
+            if (stream.DataAvailable)
             {
-                string data = reader.ReadLine();
-                if (data != null)
-                    OnIncomingData(data);
-                Debug.Log(data);
+                byte[] buffer = new byte[1024];
+                if (buffer != null)
+                {
+                    OnIncomingData(buffer);
+                    Debug.Log(Encoding.UTF8.GetString(buffer));
+                }
             }
         }
     }
 
-    private void OnIncomingData(string data)
+    private void OnIncomingData(byte[] buffer)
     {
-        //if (data == "%NAME")//Пример команды: %REG:lol@gmail.com:150684:Gladi
-        //{
-        //    Send("&NAME|" + clientName);        
-        //    return;
-        //}
-        Debug.Log(data);
-        if (data.Contains("%REG"))
+        string data = Encoding.UTF8.GetString(buffer);
+
+
+        if (data.Contains("%REGOD"))
         {
-            data.Substring(5);
+            data.Substring(7);
             ErrorBoxMessage.text = data;
-        }
-        else
-        {
             menu[0].active = false;
             menu[1].active = true;
             menu[2].active = false;
-        }
-
-        if (data.Contains("%LOG"))
-        {
-            data.Substring(5);
-            ErrorBoxMessage.text = data;
-        }
-        else
-        {
-            menu[0].active = false;
-            menu[1].active = false;
-            menu[2].active = true;
+            Debug.Log(data);
         }
 
         GameObject go = Instantiate(messagePrefab, chatContainer.transform);
@@ -111,7 +85,7 @@ public class Client : MonoBehaviour
         Destroy(go, 10);
     }
 
-//\\ 
+    //\\ 
     public void StartRegistration()
     {
         Email = GameObject.Find("EmailInput").GetComponent<InputField>().text;
@@ -129,10 +103,10 @@ public class Client : MonoBehaviour
         Pass = GameObject.Find("PassInput").GetComponent<InputField>().text;
         GameObject.Find("PassInput").GetComponent<InputField>().text = "";
 
-        Send($"%LOG:{Email}:{Pass}");     
+        Send($"%LOG:{Email}:{Pass}");
         return;
     }
-//\\
+    //\\
 
     private void Send(string data)
     {
@@ -171,4 +145,3 @@ public class Client : MonoBehaviour
         CloseSocket();
     }
 }
- 
