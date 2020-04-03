@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Net.Sockets;
 
 namespace Server
 {
-    static public class Data
+    public static class Data
     {
-        static public List<ClientConnectOnly> ClientsOnlyData { get; set; } = new List<ClientConnectOnly>();
+        public static List<ClientConnectOnly> ClientsOnlyData { get; set; } = new List<ClientConnectOnly>();
+        public static object Settings { get; set; }
 
         //Прочее
 

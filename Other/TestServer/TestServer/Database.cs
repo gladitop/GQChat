@@ -1,56 +1,103 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data.OleDb;
 
-namespace TestServer
+namespace Server
 {
-    class Database
+    public static class Database///TODO Проверить команды sql (готово)
     {
+        public const string ConnectCmd = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=Database.mdb;";
 
-        public static string connectString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=DataBase.mdb;";
-        //public static string connectString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=DataBase.mdb;";
-
-        public static void AddNewAccounts(string nick, string email, string password)
+        public static string GetNickClient(string email)
         {
-            OleDbConnection myConnection = new OleDbConnection(connectString);
-            myConnection.Open();
-            //ToDo("Когда нибудь, когда сакура расцветёт в ночи отражённых лучей луны, мы перестанем нести это бремя идиотского database");
+            OleDbConnection connection = new OleDbConnection(ConnectCmd);
+            connection.Open();
 
-            string query = $"INSERT INTO [Accounts] (Acc_Nick, Acc_Email, Acc_Password) VALUES ('{nick}', '{email}', '{password}')";
-            //INSERT INTO конечный_объект [(поле1[, поле2[, …]])] VALUES (значение1[, значение2[, …])
-            OleDbCommand command = new OleDbCommand(query, myConnection);
-            command.ExecuteNonQuery();
-            myConnection.Close();
+            OleDbCommand command = new OleDbCommand($"SELECT Nick FROM [Accounts] WHERE Acc_Email = {email}", connection);
+            string answer = command.ExecuteReader().ToString();
+            connection.Close();
+
+            return answer;
         }
 
-        public static void OleDbCommand()
+        public static void GetClientInfo(string email, string passworld)//TODO
         {
-            //string query = "SELECT Nick From Accounts WHERE ID = 1";
-            //comands
-            //text.text = command.ExecuteScalar().ToString();
 
-            //OleDbDataReader reader = command.ExecuteReader();
-            //while(reader.Read())
-            //{
-            //    reader[0].ToString();
-            //}
+        }
 
-            //string query2 = "INSERT INTO Accounts (Nick, Email, Password) VALUES ('nick', 'email', 'password')";
-            //OleDbCommand command2 = new OleDbCommand(query, myConnection);
-            //command2.ExecuteNonQuery();
+        public static bool CheckClientPassworld(string email)//Проверка пароля аккаунта
+        {
+            try
+            {
+                OleDbConnection connection = new OleDbConnection(ConnectCmd);
+                connection.Open();
 
-            //string query2 = "UPDATE Accounts SET Email = email@gogla.com ID = 2";
-            //OleDbCommand command2 = new OleDbCommand(query, myConnection);
-            //command2.ExecuteNonQuery();
+                OleDbCommand command = new OleDbCommand($"SELECT Password FROM [Accounts] WHERE Acc_Email = {email}", connection);
+                command.ExecuteReader().ToString();
+                connection.Close();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
 
-            //string query2 = "DELETED FROM Accounts ID < 2";
-            //OleDbCommand command2 = new OleDbCommand(query, myConnection);
-            //command2.ExecuteNonQuery();
+            //P.S. Если он нечего не найдёт, то будет исключение
+        }
 
-            //string query = "SELECT MAX(ID) FROM Accounts"
+        public static bool CheckClientEmail(string email)//Проверка email
+        {
+            try
+            {
+                OleDbConnection connection = new OleDbConnection(ConnectCmd);
+                connection.Open();
+
+                OleDbCommand command = new OleDbCommand($"SELECT UserId FROM [Accounts] WHERE Acc_Email = {email}", connection);
+                command.ExecuteReader().ToString();
+                connection.Close();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                //Console.WriteLine(ex.Message);
+                return false;
+            }
+
+            //P.S. Если он нечего не найдёт, то будет исключение
+        }
+
+        //public static long GetLastIdAccount()//Error!
+        //{
+            /*
+            OleDbConnection connection = new OleDbConnection(ConnectCmd);
+            connection.Open();
+
+            OleDbCommand command = new OleDbCommand($"SELECT LAST_INSERT_ID(Accounts)", connection);
+            long answer = long.Parse(command.ExecuteReader().ToString());
+            connection.Close();
+
+            return answer;
+            */
+
+          //  var set = (Settings)Data.Settings;
+           // return set.LastId;
+        //}
+
+        public static void AccountAdd(string email, string passworld, string nick)//Добавить в аккаунт
+        {
+            try
+            {
+                OleDbConnection connection = new OleDbConnection(ConnectCmd);
+                connection.Open();
+
+                OleDbCommand command = new OleDbCommand($"INSERT INTO [Accounts] (Acc_Email, Acc_Password, Acc_Nick) VALUES ('{email}', '{passworld}', '{nick}')", connection);
+
+                command.ExecuteNonQuery();
+                connection.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }

@@ -1,32 +1,34 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.IO;
-using System.Threading;
-using System.Diagnostics;
+using System.Text;
 using System.Text.RegularExpressions;
-using Server;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace TestServer
+namespace Server
 {
-    class Program
+    internal class Program
     {
-        static TcpListener server = new TcpListener(IPAddress.Any, 908);
-        static StreamWriter sw = new StreamWriter("Log.txt");
+        private static readonly TcpListener server = new TcpListener(IPAddress.Any, 908);
+        private static readonly StreamWriter sw = new StreamWriter("Log.txt");
 
-        static void Main(string[] args)
+        //static NetworkStream networkStream;
+
+        private static void Main(string[] args)
         {
             Console.Title = "Server";
+            WriteLine("Загрузка конфига...", ConsoleColor.Yellow);
+            SettingsManager.Load();
             WriteLine("Загрузка сервера...", ConsoleColor.Yellow);
             sw.AutoFlush = true;
             server.Start();
 
-            Thread thread = new Thread(new ThreadStart(NewConnect));
-            thread.IsBackground = true;
+            Thread thread = new Thread(new ThreadStart(NewConnect))
+            {
+                IsBackground = true
+            };
             thread.Start();
 
             WriteLine("Сервер запущен!", ConsoleColor.Green);
@@ -35,7 +37,7 @@ namespace TestServer
             Environment.Exit(0);
         }
 
-        static void UpdateMessages(string text, Data.ClientConnectOnly onlyClient)
+        private static void UpdateMessages(string text, Data.ClientConnectOnly onlyClient)//Для общего чата
         {
             try
             {
@@ -47,7 +49,7 @@ namespace TestServer
             }
         }
 
-        static void MessagesClient(object i)
+        private static void MessagesClient(object i)
         {
             Data.ClientConnectOnly onlyClient = (Data.ClientConnectOnly)i;
             byte[] buffer = new byte[1024];
@@ -56,54 +58,191 @@ namespace TestServer
             while (true)
             {
                 Task.Delay(10).Wait();
-            }
-        }
 
-        static void CheckNewConnect(object i)
-        {
-            byte[] buffer = new byte[1024];
-            TcpClient client = (TcpClient)i;
-
-            int messi = client.Client.Receive(buffer);
-
-            while (true)
-            {
-                Task.Delay(10).Wait();
                 try
                 {
-
-                    linkCommand:
-
-                    messi = client.Client.Receive(buffer);
+                    //Пример: %MES:Hello! (Ник мы уже знаем)
+                    messi = onlyClient.ClientSocket.Client.Receive(buffer);
                     string answer = Encoding.UTF8.GetString(buffer, 0, messi);
 
-                    Console.WriteLine(answer);
-                    
-                    if (answer.Contains("%REG"))//регистрация
+
+                    if (answer.Contains("%MES"))//Для общего чата
                     {
-                        Match regex = Regex.Match(answer, "%REG:(.*):(.*):(.*)");
+                        Match regex = Regex.Match(answer, "%MES:(.*)");
+                        string messagesText = regex.Groups[1].Value;
 
-                        string email = regex.Groups[1].Value;
-                        string password = regex.Groups[2].Value;
-                        string nick = regex.Groups[3].Value;
 
-                        Database.AddNewAccounts(nick, email, password);
+                    }
+                    else if (answer.Contains("%NCT"))//Новый чат
+                    {
 
-                        client.Client.Send(Encoding.UTF8.GetBytes("%REGOD:Успешная регистрация"));
+                    }
+                    else if (answer.Contains("%MSE"))//Для отдельного чата
+                    {
 
-                        answer = "";
-                    }                    
+                    }
                 }
-                catch(Exception e)
+                catch (Exception ex)
                 {
-                    client.Close();
-                    WriteLine("Error: Клиент! " + e, ConsoleColor.Red);
+                    onlyClient.ClientSocket.Close();
+                    Data.ClientsOnlyData.Remove(onlyClient);
+                    WriteLine($"Клиент вышел: {ex.Message}", ConsoleColor.Red);
                     return;
                 }
             }
         }
 
-        static void NewConnect()
+        private static void CheckNewConnect(object i)
+        {
+            WriteLine("Новое подключение!", ConsoleColor.Green);
+            byte[] buffer = new byte[1024];
+            TcpClient client = (TcpClient)i;
+            //NetworkStream networkClient = client.GetStream();
+
+            //Task.Delay(30).Wait();//Ждём отправки сообщения
+            //int messi = networkClient.Read(buffer, 0, buffer.Length);
+            int messi = client.Client.Receive(buffer);
+            Console.WriteLine(Encoding.UTF8.GetString(buffer, 0, messi));
+
+            Task.Delay(100).Wait();
+
+            try
+            {
+                //Провека проги
+                if (Encoding.UTF8.GetString(buffer, 0, messi) != "TCPCHAT 1.0")//!!!
+                {
+                    WriteLine("Ошибка: Cтарый или другой клиент!", ConsoleColor.Red);
+                    client.Close();
+                    return;//Проверить! (Готово)
+                }
+            }
+            catch
+            {
+                WriteLine("Ошибка! Клиент!", ConsoleColor.Red);
+                client.Close();
+                return;
+            }
+
+
+            //Команды
+
+
+            Task.Delay(10).Wait();
+
+
+        linkCommand:
+            Task.Delay(100).Wait();
+
+            //messi = client.Receive(buffer);
+            messi = client.Client.Receive(buffer);
+            string answer = Encoding.UTF8.GetString(buffer, 0, messi);
+            WriteLine("Проверка нового подклюение...", ConsoleColor.Yellow);
+
+            if (answer.Contains("%REG"))//регистрация
+            {
+                //email
+
+                Match regex = Regex.Match(answer, "%REG:(.*):(.*):(.*)");//Антон!
+                string email = regex.Groups[1].Value;
+                Console.WriteLine(@"%REG:(.*):(.*):(.*)");
+                Console.WriteLine(answer);
+                Console.WriteLine(email);
+
+                //string email = answer.
+                //TODO: Сделать проверку email через подтверждение (Нужен smtp сервер)
+
+                //пароль
+
+                string passworld = regex.Groups[2].Value;//TODO: Нужен md5
+                Console.WriteLine(passworld);
+
+                //Nick
+
+                string nick = regex.Groups[3].Value;
+                Console.WriteLine(nick);
+
+                //Проверка
+
+                bool checkNewAccount = Database.CheckClientEmail(email);
+
+                if (checkNewAccount)//!!!
+                {
+                    Console.WriteLine("0");
+                    client.Client.Send(Encoding.UTF8.GetBytes("%REG:Такой email уже используется"));
+                    goto linkCommand;
+                }
+                else
+                {
+                    Console.WriteLine("1");
+                    var set = (Settings)Data.Settings;
+                   // set.LastId = Database.GetLastIdAccount() + 1;
+                    Database.AccountAdd(email, passworld, nick);
+                    client.Client.Send(Encoding.UTF8.GetBytes("%REGOD"));
+
+                    WriteLine($"Новый аккаунт! {email}, {passworld}", ConsoleColor.Green);
+                    Data.Settings = set;
+                    SettingsManager.Save();
+                    return;
+                }
+            }
+            else if (answer.Contains("%LOG"))//Вход
+            {
+                //email
+                answer = Encoding.UTF8.GetString(buffer, 0, messi);
+
+                Match regex = Regex.Match(answer, "%LOG:(.*):(.*)");//Антон!
+                string email = regex.Groups[1].Value;
+
+                //пароль
+
+                string passworld = regex.Groups[2].Value;
+
+                //Проверка email
+
+                bool checkClient = Database.CheckClientEmail(email);
+
+                if (!checkClient)
+                {
+                    //networkClient.Write(Encoding.UTF8.GetBytes("0"), 0, buffer.Length);
+                    client.Client.Send(Encoding.UTF8.GetBytes("%LOG: email"));// False
+                    goto linkCommand;
+                }
+                else
+                {
+                    //Проверка пароля
+
+                    bool checkPassworld = Database.CheckClientPassworld(passworld);
+
+                    if (!checkPassworld)
+                    {
+                        client.Client.Send(Encoding.UTF8.GetBytes("%LOG:Неверный пароль или email"));
+                        goto linkCommand;
+                    }
+                    else
+                    {
+                        client.Client.Send(Encoding.UTF8.GetBytes("%LOGOD"));
+
+                        //Инцилизация!
+
+                        Data.ClientConnectOnly onlyClient = new Data.ClientConnectOnly(client,
+                            Database.GetNickClient(email), email, passworld);
+                        Data.ClientsOnlyData.Add(onlyClient);
+
+                        Thread thread = new Thread(new ParameterizedThreadStart(MessagesClient))
+                        {
+                            IsBackground = true
+                        };
+                        thread.Start(onlyClient);
+                        WriteLine($"Вход аккаунт! {email}, {passworld}", ConsoleColor.Green);
+
+                        return;
+                    }
+                }
+            }
+
+        }
+
+        private static void NewConnect()
         {
             while (true)
             {
@@ -117,7 +256,7 @@ namespace TestServer
             }
         }
 
-        static void WriteLine(string text, ConsoleColor color)
+        private static void WriteLine(string text, ConsoleColor color)
         {
             Console.ForegroundColor = color;
             Console.WriteLine(text);

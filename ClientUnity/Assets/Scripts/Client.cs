@@ -5,6 +5,8 @@ using System.IO;
 using UnityEngine.UI;
 using System;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 public class Client : MonoBehaviour
 {
@@ -45,6 +47,7 @@ public class Client : MonoBehaviour
             writer = new StreamWriter(stream);//Это только для общего чата получать
             reader = new StreamReader(stream);//Или для беседы
             socketReady = true;
+            Send("TCPCHAT 1.0");
         }
         catch (Exception e)
         {
@@ -59,15 +62,11 @@ public class Client : MonoBehaviour
             if (stream.DataAvailable)
             {
                 byte[] buffer = new byte[1024];
+                socket.Client.Receive(buffer);
 
                 message = Encoding.UTF8.GetString(buffer);
-
-                if (message != "")
-                {
-                    OnIncomingData();
-                    Debug.Log(message);
-                    message = "";
-                }               
+                OnIncomingData();
+                Debug.Log(message);          
                     
             }
         }
@@ -83,7 +82,14 @@ public class Client : MonoBehaviour
             menu[0].active = false;
             menu[1].active = true;
             menu[2].active = false;
-            Debug.Log(message);
+        }
+        if (message.Contains("%LOGOD"))
+        {
+            message.Substring(7);
+            ErrorBoxMessage.text = message;
+            menu[0].active = false;
+            menu[1].active = false;
+            menu[2].active = true;
         }
 
         GameObject go = Instantiate(messagePrefab, chatContainer.transform);
@@ -100,16 +106,18 @@ public class Client : MonoBehaviour
 
         Debug.Log(Email + Pass + clientName);
         Send($"%REG:{Email}:{Pass}:{clientName}");
+        Task.Delay(10).Wait();
         return;
     }
 
     public void StartLogin()
     {
-        string Email = GameObject.Find("EmailInput").GetComponent<InputField>().text;
-        Pass = GameObject.Find("PassInput").GetComponent<InputField>().text;
-        GameObject.Find("PassInput").GetComponent<InputField>().text = "";
+        Email = GameObject.Find("LoginInput").GetComponent<InputField>().text;
+        Pass = GameObject.Find("LPassInput").GetComponent<InputField>().text;
+        GameObject.Find("LPassInput").GetComponent<InputField>().text = "";
 
         Send($"%LOG:{Email}:{Pass}");
+        Task.Delay(10).Wait();
         return;
     }
     //\\
@@ -151,3 +159,5 @@ public class Client : MonoBehaviour
         CloseSocket();
     }
 }
+
+

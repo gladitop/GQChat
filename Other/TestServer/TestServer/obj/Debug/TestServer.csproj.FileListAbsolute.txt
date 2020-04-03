@@ -5,3 +5,6 @@ C:\Users\Admin\Desktop\GQChat\Other\TestServer\TestServer\obj\Debug\TestServer.c
 C:\Users\Admin\Desktop\GQChat\Other\TestServer\TestServer\obj\Debug\TestServer.exe
 C:\Users\Admin\Desktop\GQChat\Other\TestServer\TestServer\obj\Debug\TestServer.pdb
 C:\Users\Admin\Desktop\GQChat\Other\TestServer\TestServer\obj\Debug\TestServer.csprojAssemblyReference.cache
+C:\Users\Admin\Desktop\GQChat\Other\TestServer\TestServer\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Admin\Desktop\GQChat\Other\TestServer\TestServer\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Admin\Desktop\GQChat\Other\TestServer\TestServer\obj\Debug\TestServer.csproj.CopyComplete
