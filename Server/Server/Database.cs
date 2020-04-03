@@ -65,7 +65,7 @@ namespace Server
             //P.S. Если он нечего не найдёт, то будет исключение
         }
 
-        public static long GetLastIdAccount()//Error!
+        public static long GetLastIdAccount()//Error! (Исправлено)
         {
             /*
             OleDbConnection connection = new OleDbConnection(ConnectCmd);
@@ -82,7 +82,7 @@ namespace Server
             return set.LastId;
         }
 
-        public static void AccountAdd(string email, string passworld, string nick, long id)//Добавить в аккаунт
+        public static void AccountAdd(string email, string passworld, string nick, long id)//Добавить в аккаунт ERROR
         {
             try
             {

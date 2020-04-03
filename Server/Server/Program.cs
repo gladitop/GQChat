@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -13,15 +14,20 @@ namespace Server
     {
         private static readonly TcpListener server = new TcpListener(IPAddress.Any, 908);
         private static readonly StreamWriter sw = new StreamWriter("Log.txt");
+        static NetworkStream NetworkMainMessages;
 
         //static NetworkStream networkStream;
 
-        private static void Main(string[] args)
+        private static void Main(string[] args)//Запуск сервера
         {
             Console.Title = "Server";
+
             WriteLine("Загрузка конфига...", ConsoleColor.Yellow);
+
             SettingsManager.Load();
+
             WriteLine("Загрузка сервера...", ConsoleColor.Yellow);
+
             sw.AutoFlush = true;
             server.Start();
 
@@ -34,7 +40,17 @@ namespace Server
             WriteLine("Сервер запущен!", ConsoleColor.Green);
             Console.ReadLine();
             sw.Close();
+            DisconnectClients();
             Environment.Exit(0);
+        }
+
+        static void DisconnectClients()
+        {
+            foreach (Data.ClientConnectOnly client in Data.ClientsOnlyData)
+            {
+                client.ClientSocket.Close();
+                WriteLine($"Клиент {client.Email}, {client.Passworld} отключился", ConsoleColor.Green);
+            }
         }
 
         private static void UpdateMessages(string text, Data.ClientConnectOnly onlyClient)//Для общего чата
@@ -49,7 +65,31 @@ namespace Server
             }
         }
 
-        private static void MessagesClient(object i)
+        public static void MessagesMain(string text)//Отправка сообщения в общий чат
+        {
+            WriteLine($"Сообщение в общий чат: {text}", ConsoleColor.Green);
+            byte[] buffer = new byte[1024];
+
+            //%MME - Получение сообщение в общий чат
+
+            buffer = Encoding.UTF8.GetBytes($"%MME:{text}");
+
+            foreach (Data.ClientConnectOnly client in Data.ClientsOnlyData)
+            {
+                try
+                {
+                    client.ClientSocket.Client.Send(buffer);
+                }
+                catch 
+                {
+                    WriteLine($"Ошибка клиента: {client.Nick}, {client.Email}", ConsoleColor.Red);
+                    client.ClientSocket.Close();
+                    Data.ClientsOnlyData.Remove(client);
+                }
+            }
+        }
+
+        private static void MessagesClient(object i)//Команды от клиента
         {
             Data.ClientConnectOnly onlyClient = (Data.ClientConnectOnly)i;
             byte[] buffer = new byte[1024];
@@ -71,15 +111,25 @@ namespace Server
                         Match regex = Regex.Match(answer, "%MES:(.*)");
                         string messagesText = regex.Groups[1].Value;
 
-
+                        MessagesMain(messagesText);
                     }
                     else if (answer.Contains("%NCT"))//Новый чат
                     {
 
                     }
-                    else if (answer.Contains("%MSE"))//Для отдельного чата
+                    else if (answer.Contains("%MSE"))//Для отдельного чата (отправка)
                     {
 
+                    }
+                    else if (answer.Contains("%UPM"))//Отправить последнии сообщение (обновление сообщений)
+                    {
+
+                    }
+                    else if (answer.Contains("%EXI"))//Выход (отключение)
+                    {
+                        onlyClient.ClientSocket.Close();
+                        Data.ClientsOnlyData.Remove(onlyClient);
+                        return;
                     }
                 }
                 catch (Exception ex)
@@ -92,7 +142,7 @@ namespace Server
             }
         }
 
-        private static void CheckNewConnect(object i)
+        private static void CheckNewConnect(object i)//Проверка нового подключения
         {
             WriteLine("Новое подключение!", ConsoleColor.Green);
             byte[] buffer = new byte[1024];
@@ -242,7 +292,7 @@ namespace Server
 
         }
 
-        private static void NewConnect()
+        private static void NewConnect()//Подключение нового подключения
         {
             while (true)
             {
@@ -256,7 +306,7 @@ namespace Server
             }
         }
 
-        private static void WriteLine(string text, ConsoleColor color)
+        private static void WriteLine(string text, ConsoleColor color)//Кравивый текст и логи
         {
             Console.ForegroundColor = color;
             Console.WriteLine(text);

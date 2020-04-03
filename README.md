@@ -55,6 +55,18 @@ notices must be preserved. Contributors provide an express grant of
 patent rights.
 ```
 
+# Команды сервера
+
+| Название       | Описание	    		         | Пример                     |
+|----------------|-------------------------------|----------------------------|
+| `%REG`         | Служит для регистрации        | `%REG:email:password:nick` |
+| `%LOG`         | Служит для входа              | `%LOG:email:password`      |
+| `%EXI`         | Служит для отключения         | `%EXI`                     |
+| `%UPM`         | Получить сообщении            | `%UPM:idChat:lastMessId`   |
+| `%NCT`         | Создания нового чата          | `%NCT:idUser`              |
+| `%MSE`         | Отправить сообщение в от. чат | `%MSE:idChat:textMess`     |
+| `%MES`         | Отправить сообщение в об. чат | `%MES:textMess`            |
+
 # Авторы
 
 1. [Gladi](https://github.com/damiralmaev) `Самый главный (коммунист)`

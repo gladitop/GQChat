@@ -5,8 +5,9 @@ namespace Server
 {
     public static class Data
     {
+        //Все подключенные клиенты
         public static List<ClientConnectOnly> ClientsOnlyData { get; set; } = new List<ClientConnectOnly>();
-        public static object Settings { get; set; }
+        public static object Settings { get; set; }//Настройки
 
         //Прочее
 
@@ -19,10 +20,10 @@ namespace Server
                 Nick = nick;
             }
 
-            public TcpClient ClientSocket { get; set; }
-            public string Nick { get; set; }
-            public string Email { get; set; }
-            public string Passworld { get; set; }
+            public TcpClient ClientSocket { get; set; }//Сокет
+            public string Nick { get; set; }//Ник
+            public string Email { get; set; }//Почта
+            public string Passworld { get; set; }//Пароль
         }
     }
 }
