@@ -119,7 +119,8 @@ public class Server : MonoBehaviour
 
         Broadcast(c.clientName + " : " + data,clients);
     }
-    private void Broadcast(string data, List<ServerClient> cl)
+
+    private void Broadcast(string data, List<ServerClient> cl) //отсылка сообщение всем
     {
         foreach(ServerClient c in cl)
         {

@@ -24,6 +24,8 @@ public class Client : MonoBehaviour
     private StreamWriter writer;
     private StreamReader reader;
 
+    private string message;
+
     public void ConnectedToServer()
     {
         //if already connection, igmore this function
@@ -34,6 +36,7 @@ public class Client : MonoBehaviour
         string host = "127.0.0.1";
         int port = 908;
 
+        
         //Create the socket
         try
         {
@@ -56,32 +59,35 @@ public class Client : MonoBehaviour
             if (stream.DataAvailable)
             {
                 byte[] buffer = new byte[1024];
-                if (buffer != null)
+
+                message = Encoding.UTF8.GetString(buffer);
+
+                if (message != "")
                 {
-                    OnIncomingData(buffer);
-                    Debug.Log(Encoding.UTF8.GetString(buffer));
-                }
+                    OnIncomingData();
+                    Debug.Log(message);
+                    message = "";
+                }               
+                    
             }
         }
     }
 
-    private void OnIncomingData(byte[] buffer)
+    private void OnIncomingData()
     {
-        string data = Encoding.UTF8.GetString(buffer);
 
-
-        if (data.Contains("%REGOD"))
+        if (message.Contains("%REGOD"))
         {
-            data.Substring(7);
-            ErrorBoxMessage.text = data;
+            message.Substring(7);
+            ErrorBoxMessage.text = message;
             menu[0].active = false;
             menu[1].active = true;
             menu[2].active = false;
-            Debug.Log(data);
+            Debug.Log(message);
         }
 
         GameObject go = Instantiate(messagePrefab, chatContainer.transform);
-        go.GetComponentInChildren<Text>().text = data;
+        go.GetComponentInChildren<Text>().text = message;
         Destroy(go, 10);
     }
 
