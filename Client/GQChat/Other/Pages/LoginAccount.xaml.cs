@@ -54,7 +54,11 @@ namespace GQChat.Other.Pages
                 {
                     byte[] buffer = new byte[1024];
                     client.Client.Send(Encoding.UTF8.GetBytes("GQCHAT 1.0"));
+                    Task.Delay(100).Wait();
+
                     client.Client.Send(Encoding.UTF8.GetBytes($"%LOG:{tbEmail.Text}:{tbPassworld.Password}"));
+                    Task.Delay(100).Wait();
+
                     int messi = client.Client.Receive(buffer);
 
                     string answer = Encoding.UTF8.GetString(buffer, 0, messi);
@@ -62,7 +66,7 @@ namespace GQChat.Other.Pages
                     {
                         Data.TcpClient = client;
                         Data.LoginSucces = true;
-                    }
+                    }//TODO Сделать проверку ошибок!
                 }
             }
         }

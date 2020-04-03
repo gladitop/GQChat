@@ -12,7 +12,7 @@ namespace Server
             OleDbConnection connection = new OleDbConnection(ConnectCmd);
             connection.Open();
 
-            OleDbCommand command = new OleDbCommand($"SELECT Nick FROM Accounts WHERE Email = {email}", connection);
+            OleDbCommand command = new OleDbCommand($"SELECT Nick FROM Accounts WHERE Acc_Email = {email}", connection);
             string answer = command.ExecuteReader().ToString();
             connection.Close();
 
@@ -31,7 +31,7 @@ namespace Server
                 OleDbConnection connection = new OleDbConnection(ConnectCmd);
                 connection.Open();
 
-                OleDbCommand command = new OleDbCommand($"SELECT Password FROM Accounts WHERE Email = {email}", connection);
+                OleDbCommand command = new OleDbCommand($"SELECT Password FROM [Accounts] WHERE Acc_Email = {email}", connection);
                 command.ExecuteReader().ToString();
                 connection.Close();
                 return true;
@@ -51,12 +51,12 @@ namespace Server
                 OleDbConnection connection = new OleDbConnection(ConnectCmd);
                 connection.Open();
 
-                OleDbCommand command = new OleDbCommand($"SELECT UserId FROM Accounts WHERE Email = {email}", connection);
+                OleDbCommand command = new OleDbCommand($"SELECT UserId FROM[Accounts] WHERE Acc_Email = { email }", connection);
                 command.ExecuteReader().ToString();
                 connection.Close();
                 return true;
             }
-            catch (Exception ex)
+            catch
             {
                 //Console.WriteLine(ex.Message);
                 return false;
@@ -82,14 +82,14 @@ namespace Server
             return set.LastId;
         }
 
-        public static void AccountAdd(string email, string passworld, string nick, long id)//Добавить в аккаунт ERROR
+        public static void AccountAdd(string email, string passworld, string nick)//Добавить в аккаунт ERROR
         {
             try
             {
                 OleDbConnection connection = new OleDbConnection(ConnectCmd);
                 connection.Open();
 
-                OleDbCommand command = new OleDbCommand($"INSERT INTO [Accounts] (UserId, Email, Password, Nick) VALUES ({id}, '{email}', '{passworld}', '{nick}')", connection);
+                OleDbCommand command = new OleDbCommand($"INSERT INTO [Accounts] (Acc_Email, Acc_Password, Acc_Nick) VALUES ('{email}', '{passworld}', '{nick}')", connection);
 
                 command.ExecuteNonQuery();
                 connection.Close();

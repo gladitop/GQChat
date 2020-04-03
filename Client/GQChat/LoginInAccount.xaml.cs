@@ -51,6 +51,7 @@ namespace GQChat
                         MainWindow main = new MainWindow();
                         main.Show();
                         Hide();
+                        thread.Abort();
                         return;
                     }
                 }));

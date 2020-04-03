@@ -80,7 +80,7 @@ namespace GQChat.Other.Pages
                         {
                             Data.TcpClient = client;
                             Data.LoginSucces = true;
-                        }
+                        }//TODO Сделать проверку ошибок!
                     }
                     catch (Exception ex)
                     {

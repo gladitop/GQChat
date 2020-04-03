@@ -14,7 +14,6 @@ namespace Server
     {
         private static readonly TcpListener server = new TcpListener(IPAddress.Any, 908);
         private static readonly StreamWriter sw = new StreamWriter("Log.txt");
-        static NetworkStream NetworkMainMessages;
 
         //static NetworkStream networkStream;
 
@@ -226,7 +225,7 @@ namespace Server
                     Console.WriteLine("1");
                     var set = (Settings)Data.Settings;
                     set.LastId = Database.GetLastIdAccount() + 1;
-                    Database.AccountAdd(email, passworld, nick, set.LastId);
+                    Database.AccountAdd(email, passworld, nick);
                     client.Client.Send(Encoding.UTF8.GetBytes("1"));
 
                     WriteLine($"Новый аккаунт! {email}, {passworld}", ConsoleColor.Green);
