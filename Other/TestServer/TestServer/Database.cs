@@ -12,7 +12,7 @@ namespace Server
             OleDbConnection connection = new OleDbConnection(ConnectCmd);
             connection.Open();
 
-            OleDbCommand command = new OleDbCommand($"SELECT Nick FROM [Accounts] WHERE Acc_Email = {email}", connection);
+            OleDbCommand command = new OleDbCommand($"SELECT Acc_Nick FROM [Accounts] WHERE Acc_Email = ('{email}')", connection);
             string answer = command.ExecuteReader().ToString();
             connection.Close();
 
@@ -24,75 +24,78 @@ namespace Server
 
         }
 
-        public static bool CheckClientPassworld(string email)//Проверка пароля аккаунта
+        public static bool CheckClientPassworld(string email, string passworld)//Проверка пароля аккаунта
         {
-            try
-            {
-                OleDbConnection connection = new OleDbConnection(ConnectCmd);
-                connection.Open();
 
-                OleDbCommand command = new OleDbCommand($"SELECT Password FROM [Accounts] WHERE Acc_Email = {email}", connection);
-                command.ExecuteReader().ToString();
-                connection.Close();
-                return true;
+            OleDbConnection connecton = new OleDbConnection(ConnectCmd);
+            connecton.Open();
+
+            int j = 0;
+            int InId = 0;
+            for (int i = 0; i < 16; i++)
+            {
+                j += 1;
+
+                // создаем запрос к БД MS Access
+                OleDbCommand command = new OleDbCommand($"SELECT Acc_Email FROM [Accounts] WHERE Acc_ID = {j}", connecton);
+
+                if (email != command.ExecuteScalar().ToString())
+                {
+                    if (j >= 16)
+                    {
+                        return false; 
+                    }
+                }
+                else
+                {
+                    InId = j;
+                    return true;
+                }
             }
-            catch
+
+            Console.WriteLine(InId);
+            OleDbCommand command2 = new OleDbCommand($"SELECT Acc_Password FROM [Accounts] WHERE Acc_ID = {InId}", connecton);
+            Console.WriteLine(command2.ExecuteScalar().ToString());//
+            if (passworld != command2.ExecuteScalar().ToString())
             {
                 return false;
             }
 
-            //P.S. Если он нечего не найдёт, то будет исключение
+            connecton.Close();
+            return true;
         }
 
         public static bool CheckClientEmail(string email)//Проверка email
         {
-            try
-            {
-                OleDbConnection connection = new OleDbConnection(ConnectCmd);
-                connection.Open();
-
-                OleDbCommand command = new OleDbCommand($"SELECT UserId FROM [Accounts] WHERE Acc_Email = {email}", connection);
-                // "SELECT w_name, w_position, w_salary FROM Worker ORDER BY w_salary"
-
-                OleDbDataReader reader = command.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    //listBox1.Items.Add(reader[0].ToString() + " " + reader[1].ToString() + " " + reader[2].ToString() + " ");
-                }
-
-                // закрываем OleDbDataReader
-                reader.Close();
-                connection.Close();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                //Console.WriteLine(ex.Message);
-                return false;
-            }
-
-            //P.S. Если он нечего не найдёт, то будет исключение
-        }
-
-        //public static long GetLastIdAccount()//Error!
-        //{
-            /*
             OleDbConnection connection = new OleDbConnection(ConnectCmd);
             connection.Open();
 
-            OleDbCommand command = new OleDbCommand($"SELECT LAST_INSERT_ID(Accounts)", connection);
-            long answer = long.Parse(command.ExecuteReader().ToString());
+            int j = 0;
+            for (int i = 0; i < 16; i++)
+            {
+                j += 1;
+
+                // создаем запрос к БД MS Access
+                OleDbCommand command = new OleDbCommand($"SELECT Acc_Email FROM [Accounts] WHERE Acc_ID = {j}", connection);
+
+                if (email != command.ExecuteScalar().ToString())
+                {
+                    if (j >= 16)
+                    {
+                        return false; //P.S. Если он нечего не найдёт, то будет исключение
+                    }
+                }
+                else
+                {
+                    return true;
+                }
+            }
+
             connection.Close();
+            return true;
+        }
 
-            return answer;
-            */
-
-          //  var set = (Settings)Data.Settings;
-           // return set.LastId;
-        //}
-
-        public static void AccountAdd(string email, string passworld, string nick)//Добавить в аккаунт
+        public static void AccountAdd(string email, string passworld, string nick)//Добавить в аккаунт ERROR
         {
             try
             {
@@ -108,6 +111,23 @@ namespace Server
             {
                 Console.WriteLine(ex.Message);
             }
+        }
+
+        public static long GetLastIdAccount()//Error! (Исправлено)
+        {
+            /*
+            OleDbConnection connection = new OleDbConnection(ConnectCmd);
+            connection.Open();
+
+            OleDbCommand command = new OleDbCommand($"SELECT LAST_INSERT_ID(Accounts)", connection);
+            long answer = long.Parse(command.ExecuteReader().ToString());
+            connection.Close();
+
+            return answer;
+            */
+
+            var set = (Settings)Data.Settings;
+            return set.LastId;
         }
     }
 }

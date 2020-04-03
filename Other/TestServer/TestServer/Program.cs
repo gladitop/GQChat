@@ -187,35 +187,32 @@ namespace Server
             }
             else if (answer.Contains("%LOG"))//Вход
             {
-                //email
+                
                 answer = Encoding.UTF8.GetString(buffer, 0, messi);
 
-                Match regex = Regex.Match(answer, "%LOG:(.*):(.*)");//Антон!
-                string email = regex.Groups[1].Value;
+                Match regex = Regex.Match(answer, "%LOG:(.*):(.*)"); //Распределение данных от клиента
 
-                //пароль
+                string email = regex.Groups[1].Value; //email
 
-                string passworld = regex.Groups[2].Value;
-
-                //Проверка email
-
-                bool checkClient = Database.CheckClientEmail(email);
+                string passworld = regex.Groups[2].Value; //пароль
+                     
+                bool checkClient = Database.CheckClientEmail(email); //Проверка email
 
                 if (!checkClient)
                 {
                     //networkClient.Write(Encoding.UTF8.GetBytes("0"), 0, buffer.Length);
-                    client.Client.Send(Encoding.UTF8.GetBytes("%LOG: email"));// False
+                    client.Client.Send(Encoding.UTF8.GetBytes("%LOG: email введён не верно"));// False
                     goto linkCommand;
                 }
                 else
                 {
                     //Проверка пароля
 
-                    bool checkPassworld = Database.CheckClientPassworld(passworld);
+                    bool checkPassworld = Database.CheckClientPassworld(email, passworld);
 
                     if (!checkPassworld)
                     {
-                        client.Client.Send(Encoding.UTF8.GetBytes("%LOG:Неверный пароль или email"));
+                        client.Client.Send(Encoding.UTF8.GetBytes("%LOG:Неверный пароль"));
                         goto linkCommand;
                     }
                     else
@@ -233,7 +230,7 @@ namespace Server
                             IsBackground = true
                         };
                         thread.Start(onlyClient);
-                        WriteLine($"Вход аккаунт! {email}, {passworld}", ConsoleColor.Green);
+                        WriteLine($"Клиент: {email}, удачно присоеденился к чату| Его пароль: {passworld}", ConsoleColor.Green);
 
                         return;
                     }
