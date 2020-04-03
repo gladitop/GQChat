@@ -26,7 +26,7 @@
 * Visual Studio 2019
 * .Net Framework 4.8
 * WPF
-* Unity ***(Меня составил*** [Qliook](https://github.com/Qliook)***)***
+* Unity ***(Меня заставил*** [Qliook](https://github.com/Qliook)***)***
 
 ## NuGet пакеты
 
