@@ -19,6 +19,8 @@ namespace Server
         private static void Main(string[] args)
         {
             Console.Title = "Server";
+            WriteLine("Загрузка конфига...", ConsoleColor.Yellow);
+            SettingsManager.Load();
             WriteLine("Загрузка сервера...", ConsoleColor.Yellow);
             sw.AutoFlush = true;
             server.Start();
@@ -128,112 +130,115 @@ namespace Server
             Task.Delay(10).Wait();
 
 
-            linkCommand:
-                Task.Delay(100).Wait();
+        linkCommand:
+            Task.Delay(100).Wait();
 
-                //messi = client.Receive(buffer);
-                messi = client.Client.Receive(buffer);
-                string answer = Encoding.UTF8.GetString(buffer, 0, messi);
-                WriteLine("Проверка нового подклюение...", ConsoleColor.Yellow);
+            //messi = client.Receive(buffer);
+            messi = client.Client.Receive(buffer);
+            string answer = Encoding.UTF8.GetString(buffer, 0, messi);
+            WriteLine("Проверка нового подклюение...", ConsoleColor.Yellow);
 
-                if (answer.Contains("%REG"))//регистрация
+            if (answer.Contains("%REG"))//регистрация
+            {
+                //email
+
+                Match regex = Regex.Match(answer, "%REG:(.*):(.*):(.*)");//Антон!
+                string email = regex.Groups[1].Value;
+                Console.WriteLine(@"%REG:(.*):(.*):(.*)");
+                Console.WriteLine(answer);
+                Console.WriteLine(email);
+
+                //string email = answer.
+                //TODO: Сделать проверку email через подтверждение (Нужен smtp сервер)
+
+                //пароль
+
+                string passworld = regex.Groups[2].Value;//TODO: Нужен md5
+                Console.WriteLine(passworld);
+
+                //Nick
+
+                string nick = regex.Groups[3].Value;
+                Console.WriteLine(nick);
+
+                //Проверка
+
+                bool checkNewAccount = Database.CheckClientEmail(email);
+
+                if (checkNewAccount)//!!!
                 {
-                    //email
+                    Console.WriteLine("0");
+                    client.Client.Send(Encoding.UTF8.GetBytes("%REG:Такой email уже используется"));
+                    goto linkCommand;
+                }
+                else
+                {
+                    Console.WriteLine("1");
+                    var set = (Settings)Data.Settings;
+                    set.LastId = Database.GetLastIdAccount() + 1;
+                    Database.AccountAdd(email, passworld, nick, set.LastId);
+                    client.Client.Send(Encoding.UTF8.GetBytes("1"));
 
-                    Match regex = Regex.Match(answer, "%REG:(.*):(.*):(.*)");//Антон!
-                    string email = regex.Groups[1].Value;
-                    Console.WriteLine(@"%REG:(.*):(.*):(.*)");
-                    Console.WriteLine(answer);
-                    Console.WriteLine(email);
+                    WriteLine($"Новый аккаунт! {email}, {passworld}", ConsoleColor.Green);
+                    Data.Settings = set;
+                    SettingsManager.Save();
+                    return;
+                }
+            }
+            else if (answer.Contains("%LOG"))//Вход
+            {
+                //email
+                answer = Encoding.UTF8.GetString(buffer, 0, messi);
 
-                    //string email = answer.
-                    //TODO: Сделать проверку email через подтверждение (Нужен smtp сервер)
+                Match regex = Regex.Match(answer, "%LOG:(.*):(.*)");//Антон!
+                string email = regex.Groups[1].Value;
 
-                    //пароль
+                //пароль
 
-                    string passworld = regex.Groups[2].Value;//TODO: Нужен md5
-                    Console.WriteLine(passworld);
+                string passworld = regex.Groups[2].Value;
 
-                    //Nick
+                //Проверка email
 
-                    string nick = regex.Groups[3].Value;
-                    Console.WriteLine(nick);
+                bool checkClient = Database.CheckClientEmail(email);
 
-                    //Проверка
+                if (!checkClient)
+                {
+                    //networkClient.Write(Encoding.UTF8.GetBytes("0"), 0, buffer.Length);
+                    client.Client.Send(Encoding.UTF8.GetBytes("%LOG:Неверный пароль или email"));// False
+                    goto linkCommand;
+                }
+                else
+                {
+                    //Проверка пароля
 
-                    bool checkNewAccount = Database.CheckClientEmail(email);
+                    bool checkPassworld = Database.CheckClientPassworld(passworld);
 
-                    if (checkNewAccount)//!!!
+                    if (!checkPassworld)
                     {
-                        Console.WriteLine("0");
-                        client.Client.Send(Encoding.UTF8.GetBytes("%REG:Такой email уже используется"));
+                        client.Client.Send(Encoding.UTF8.GetBytes("%LOG:Неверный пароль или email"));
                         goto linkCommand;
                     }
                     else
                     {
-                        Console.WriteLine("1");
-                        long ID = Database.GetLastIdAccount() + 1;
-                        Database.AccountAdd(email, passworld, nick, ID);
                         client.Client.Send(Encoding.UTF8.GetBytes("1"));
 
-                        WriteLine($"Новый аккаунт! {email}, {passworld}", ConsoleColor.Green);
+                        //Инцилизация!
+
+                        Data.ClientConnectOnly onlyClient = new Data.ClientConnectOnly(client,
+                            Database.GetNickClient(email), email, passworld);
+                        Data.ClientsOnlyData.Add(onlyClient);
+
+                        Thread thread = new Thread(new ParameterizedThreadStart(MessagesClient))
+                        {
+                            IsBackground = true
+                        };
+                        thread.Start(onlyClient);
+                        WriteLine($"Вход аккаунт! {email}, {passworld}", ConsoleColor.Green);
+
                         return;
                     }
                 }
-                else if (answer.Contains("%LOG"))//Вход
-                {
-                    //email
-                    answer = Encoding.UTF8.GetString(buffer, 0, messi);
-
-                    Match regex = Regex.Match(answer, "%LOG:(.*):(.*)");//Антон!
-                    string email = regex.Groups[1].Value;
-
-                    //пароль
-
-                    string passworld = regex.Groups[2].Value;
-
-                    //Проверка email
-
-                    bool checkClient = Database.CheckClientEmail(email);
-
-                    if (!checkClient)
-                    {
-                        //networkClient.Write(Encoding.UTF8.GetBytes("0"), 0, buffer.Length);
-                        client.Client.Send(Encoding.UTF8.GetBytes("%LOG:Неверный пароль или email"));// False
-                        goto linkCommand;
-                    }
-                    else
-                    {
-                        //Проверка пароля
-
-                        bool checkPassworld = Database.CheckClientPassworld(passworld);
-
-                        if (!checkPassworld)
-                        {
-                            client.Client.Send(Encoding.UTF8.GetBytes("%LOG:Неверный пароль или email"));
-                            goto linkCommand;
-                        }
-                        else
-                        {
-                            client.Client.Send(Encoding.UTF8.GetBytes("1"));
-
-                            //Инцилизация!
-
-                            Data.ClientConnectOnly onlyClient = new Data.ClientConnectOnly(client,
-                                Database.GetNickClient(email), email, passworld);
-                            Data.ClientsOnlyData.Add(onlyClient);
-
-                            Thread thread = new Thread(new ParameterizedThreadStart(MessagesClient))
-                            {
-                                IsBackground = true
-                            };
-                            thread.Start(onlyClient);
-                            WriteLine($"Вход аккаунт! {email}, {passworld}", ConsoleColor.Green);
-
-                            return;
-                        }
-                    }
-                }
+            }
 
         }
 

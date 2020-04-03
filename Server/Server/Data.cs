@@ -6,6 +6,7 @@ namespace Server
     public static class Data
     {
         public static List<ClientConnectOnly> ClientsOnlyData { get; set; } = new List<ClientConnectOnly>();
+        public static object Settings { get; set; }
 
         //Прочее
 

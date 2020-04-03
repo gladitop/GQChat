@@ -67,6 +67,7 @@ namespace Server
 
         public static long GetLastIdAccount()//Error!
         {
+            /*
             OleDbConnection connection = new OleDbConnection(ConnectCmd);
             connection.Open();
 
@@ -75,6 +76,10 @@ namespace Server
             connection.Close();
 
             return answer;
+            */
+
+            var set = (Settings)Data.Settings;
+            return set.LastId;
         }
 
         public static void AccountAdd(string email, string passworld, string nick, long id)//Добавить в аккаунт
