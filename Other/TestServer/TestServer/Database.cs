@@ -52,7 +52,17 @@ namespace Server
                 connection.Open();
 
                 OleDbCommand command = new OleDbCommand($"SELECT UserId FROM [Accounts] WHERE Acc_Email = {email}", connection);
-                command.ExecuteReader().ToString();
+                // "SELECT w_name, w_position, w_salary FROM Worker ORDER BY w_salary"
+
+                OleDbDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    //listBox1.Items.Add(reader[0].ToString() + " " + reader[1].ToString() + " " + reader[2].ToString() + " ");
+                }
+
+                // закрываем OleDbDataReader
+                reader.Close();
                 connection.Close();
                 return true;
             }
