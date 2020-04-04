@@ -34,7 +34,13 @@ namespace Server
 
         public static void Save()
         {
-            File.WriteAllText(FilePath, JsonConvert.SerializeObject(Data.Settings));
+            var settings = (Settings)Data.Settings;
+            var set = new Settings()
+            {
+                LastId = settings.LastId
+            };
+
+            File.WriteAllText(FilePath, JsonConvert.SerializeObject(set));
         }
     }
 }

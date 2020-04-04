@@ -4,24 +4,43 @@ using System.Data.OleDb;
 namespace Server
 {
     public static class Database///TODO Проверить команды sql (готово)
-    {
-        public const string ConnectCmd = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=Database.mdb;";
+    { 
+        //Думаю лучше с база данной работать с 64 битной системой, а не 32 битной
+        public const string ConnectCmd = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=DataBase.mdb;";
 
-        public static string GetNickClient(string email)
+        public static string GetMessageCountLast(long messCount)//TODO
+        {
+
+
+            return "";
+        }
+
+        public static long GetIdClient(string email)//Получить id клиента
         {
             OleDbConnection connection = new OleDbConnection(ConnectCmd);
             connection.Open();
 
-            OleDbCommand command = new OleDbCommand($"SELECT Nick FROM Accounts WHERE Acc_Email = {email}", connection);
-            string answer = command.ExecuteReader().ToString();
+            OleDbCommand command = new OleDbCommand($"SELECT Acc_ID FROM [Accounts] WHERE Acc_Email = {email}",
+                connection);
+
+            string answer = command.ExecuteScalar().ToString();
+            connection.Close();
+
+            return long.Parse(answer);
+        }
+
+        public static string GetNickClient(string email)//Получить ник
+        {
+            OleDbConnection connection = new OleDbConnection(ConnectCmd);
+            connection.Open();
+
+            OleDbCommand command = new OleDbCommand($"SELECT Acc_Nick FROM [Accounts] WHERE Acc_Email = {email}", 
+                connection);
+
+            string answer = command.ExecuteScalar().ToString();
             connection.Close();
 
             return answer;
-        }
-
-        public static void GetClientInfo(string email, string passworld)//TODO
-        {
-
         }
 
         public static bool CheckClientPassworld(string email)//Проверка пароля аккаунта
@@ -31,13 +50,29 @@ namespace Server
                 OleDbConnection connection = new OleDbConnection(ConnectCmd);
                 connection.Open();
 
-                OleDbCommand command = new OleDbCommand($"SELECT Password FROM [Accounts] WHERE Acc_Email = {email}", connection);
-                command.ExecuteReader().ToString();
+                OleDbCommand command = new OleDbCommand($"SELECT Acc_Password FROM [Accounts] WHERE Acc_Email = {email}",
+                    connection);
+
+                if (email == command.ExecuteScalar().ToString())
+                {
+                    goto linkCheckClientPasswordTrue;
+                }
+                else
+                {
+                    goto linkCheckClientPasswordFalse;
+                }
+
+            linkCheckClientPasswordTrue:
+                connection.Close();
+                return true;
+
+            linkCheckClientPasswordFalse:
                 connection.Close();
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 return false;
             }
 
@@ -51,14 +86,29 @@ namespace Server
                 OleDbConnection connection = new OleDbConnection(ConnectCmd);
                 connection.Open();
 
-                OleDbCommand command = new OleDbCommand($"SELECT UserId FROM[Accounts] WHERE Acc_Email = { email }", connection);
-                command.ExecuteReader().ToString();
+                OleDbCommand command = new OleDbCommand($"SELECT Acc_Email FROM [Accounts] WHERE Acc_Email = {email}",
+                    connection);
+
+                if (email == command.ExecuteScalar().ToString())
+                {
+                    goto linkCheckClientEmailTrue;
+                }
+                else
+                {
+                    goto linkCheckClientEmailFalse;
+                }
+
+            linkCheckClientEmailTrue:
+                connection.Close();
+                return true;
+
+            linkCheckClientEmailFalse:
                 connection.Close();
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
-                //Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.Message);
                 return false;
             }
 
@@ -89,7 +139,8 @@ namespace Server
                 OleDbConnection connection = new OleDbConnection(ConnectCmd);
                 connection.Open();
 
-                OleDbCommand command = new OleDbCommand($"INSERT INTO [Accounts] (Acc_Email, Acc_Password, Acc_Nick) VALUES ('{email}', '{passworld}', '{nick}')", connection);
+                OleDbCommand command = new OleDbCommand($"INSERT INTO [Accounts] (Acc_Email, Acc_Password, Acc_Nick)" +
+                    $" VALUES ('{email}', '{passworld}', '{nick}')", connection);
 
                 command.ExecuteNonQuery();
                 connection.Close();

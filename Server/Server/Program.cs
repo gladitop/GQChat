@@ -57,10 +57,24 @@ namespace Server
             try
             {
                 WriteLine($"Cообщение в общий чат: {onlyClient.Nick}:{text}", ConsoleColor.Green);
+                WriteLine("Отправка сообщениие в этот чат...", ConsoleColor.Yellow);
+
+                byte[] answer = new byte[1024];
+                answer = Encoding.UTF8.GetBytes(text);
+
+                foreach (Data.ClientConnectOnly client in Data.ClientsOnlyData)
+                {
+                    client.ClientSocket.Client.Send(answer);
+                }
+
+                WriteLine($"Сообщение '{text}', отправлено!", ConsoleColor.Green);
             }
             catch (Exception ex)
             {
                 WriteLine($"Ошибка в общем чате: {ex.Message}", ConsoleColor.Red);
+                WriteLine($"Клиент: {onlyClient.Nick} {onlyClient.Email}", ConsoleColor.Green);
+                onlyClient.ClientSocket.Close();
+                Data.ClientsOnlyData.Remove(onlyClient);
             }
         }
 
@@ -79,7 +93,7 @@ namespace Server
                 {
                     client.ClientSocket.Client.Send(buffer);
                 }
-                catch 
+                catch
                 {
                     WriteLine($"Ошибка клиента: {client.Nick}, {client.Email}", ConsoleColor.Red);
                     client.ClientSocket.Close();
@@ -93,6 +107,7 @@ namespace Server
             Data.ClientConnectOnly onlyClient = (Data.ClientConnectOnly)i;
             byte[] buffer = new byte[1024];
             int messi;
+            string answer;
 
             while (true)
             {
@@ -102,34 +117,7 @@ namespace Server
                 {
                     //Пример: %MES:Hello! (Ник мы уже знаем)
                     messi = onlyClient.ClientSocket.Client.Receive(buffer);
-                    string answer = Encoding.UTF8.GetString(buffer, 0, messi);
-
-
-                    if (answer.Contains("%MES"))//Для общего чата
-                    {
-                        Match regex = Regex.Match(answer, "%MES:(.*)");
-                        string messagesText = regex.Groups[1].Value;
-
-                        MessagesMain(messagesText);
-                    }
-                    else if (answer.Contains("%NCT"))//Новый чат
-                    {
-
-                    }
-                    else if (answer.Contains("%MSE"))//Для отдельного чата (отправка)
-                    {
-
-                    }
-                    else if (answer.Contains("%UPM"))//Отправить последнии сообщение (обновление сообщений)
-                    {
-
-                    }
-                    else if (answer.Contains("%EXI"))//Выход (отключение)
-                    {
-                        onlyClient.ClientSocket.Close();
-                        Data.ClientsOnlyData.Remove(onlyClient);
-                        return;
-                    }
+                    answer = Encoding.UTF8.GetString(buffer, 0, messi);
                 }
                 catch (Exception ex)
                 {
@@ -137,6 +125,68 @@ namespace Server
                     Data.ClientsOnlyData.Remove(onlyClient);
                     WriteLine($"Клиент вышел: {ex.Message}", ConsoleColor.Red);
                     return;
+                }
+
+                if (answer.Contains("%MES"))//Для общего чата
+                {
+                    Match regex = Regex.Match(answer, "%MES:(.*)");
+                    string messagesText = regex.Groups[1].Value;
+
+                    MessagesMain(messagesText);
+                }
+                else if (answer.Contains("%NCT"))//Новый чат
+                {
+
+                }
+                else if (answer.Contains("%MSE"))//Для отдельного чата (отправка)
+                {
+
+                }
+                else if (answer.Contains("%UPM"))//Отправить последнии сообщение (обновление сообщений) TODO
+                {
+                    try
+                    {
+                        WriteLine($"Выполнения запроса: '%UPM' от: {onlyClient.Nick}, {onlyClient.ID}",
+                            ConsoleColor.Yellow);
+                        Match regex = Regex.Match(answer, "%UPM:(.*):(.*)");
+                        long idChat = long.Parse(regex.Groups[1].Value);
+                        long countMess = long.Parse(regex.Groups[2].Value);
+
+                        for (long Iupm = 0; Iupm < countMess; Iupm++)
+                        {
+                            //buffer = Encoding.UTF8.GetBytes();
+                            //onlyClient.ClientSocket.Client.Send();
+                        }
+
+                        WriteLine($"Готово '%UPM' от: {onlyClient.Nick}, {onlyClient.ID}!",
+                            ConsoleColor.Green);
+                    }
+                    catch (Exception ex)
+                    {
+                        WriteLine($"Ошибка: {ex.Message}", ConsoleColor.Red);
+                    }
+                }
+                else if (answer.Contains("%EXI"))//Выход (отключение)
+                {
+                    onlyClient.ClientSocket.Close();
+                    Data.ClientsOnlyData.Remove(onlyClient);
+                    return;
+                }
+                else if (answer.Contains("%INF"))//Получить информацию о аккаунте
+                {
+
+                }
+                else if (answer.Contains("%DEL"))//Удалить аккаунт
+                {
+
+                }
+                else if (answer.Contains("%SЕM"))//Отправить файл (Сообщение) (( В общий чат ))
+                {
+
+                }
+                else if (answer.Contains("%SMM"))//Отправить файл (Сообщение) (( В личный чат ))
+                {
+
                 }
             }
         }
@@ -250,7 +300,7 @@ namespace Server
 
                 bool checkClient = Database.CheckClientEmail(email);
 
-                if (!checkClient)
+                if (checkClient)
                 {
                     //networkClient.Write(Encoding.UTF8.GetBytes("0"), 0, buffer.Length);
                     client.Client.Send(Encoding.UTF8.GetBytes("%LOG:Неверный пароль или email"));// False
@@ -262,7 +312,7 @@ namespace Server
 
                     bool checkPassworld = Database.CheckClientPassworld(passworld);
 
-                    if (!checkPassworld)
+                    if (checkPassworld)
                     {
                         client.Client.Send(Encoding.UTF8.GetBytes("%LOG:Неверный пароль или email"));
                         goto linkCommand;
@@ -274,7 +324,7 @@ namespace Server
                         //Инцилизация!
 
                         Data.ClientConnectOnly onlyClient = new Data.ClientConnectOnly(client,
-                            Database.GetNickClient(email), email, passworld);
+                            Database.GetNickClient(email), email, passworld, Database.GetIdClient(email));
                         Data.ClientsOnlyData.Add(onlyClient);
 
                         Thread thread = new Thread(new ParameterizedThreadStart(MessagesClient))
