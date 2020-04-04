@@ -7,6 +7,7 @@ namespace Server
     {
         public static List<ClientConnectOnly> ClientsOnlyData { get; set; } = new List<ClientConnectOnly>();
         public static object Settings { get; set; }
+        public static long InID { get; set; }
 
         //Прочее
 

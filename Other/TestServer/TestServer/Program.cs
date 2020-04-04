@@ -208,7 +208,7 @@ namespace Server
                 {
                     //Проверка пароля
 
-                    bool checkPassworld = Database.CheckClientPassworld(email, passworld);
+                    bool checkPassworld = Database.CheckClientPassworld(passworld);
 
                     if (!checkPassworld)
                     {

@@ -19,50 +19,29 @@ namespace Server
             return answer;
         }
 
-        public static void GetClientInfo(string email, string passworld)//TODO
+        public static bool CheckClientPassworld(string passworld)//Проверка пароля аккаунта с помощью data
         {
-
-        }
-
-        public static bool CheckClientPassworld(string email, string passworld)//Проверка пароля аккаунта
-        {
-
-            OleDbConnection connecton = new OleDbConnection(ConnectCmd);
-            connecton.Open();
-
-            int j = 0;
-            int InId = 0;
-            for (int i = 0; i < 16; i++)
+            try
             {
-                j += 1;
+                OleDbConnection connecton = new OleDbConnection(ConnectCmd);
+                connecton.Open();
 
                 // создаем запрос к БД MS Access
-                OleDbCommand command = new OleDbCommand($"SELECT Acc_Email FROM [Accounts] WHERE Acc_ID = {j}", connecton);
+                OleDbCommand command = new OleDbCommand($"SELECT Acc_Password FROM [Accounts] WHERE Acc_ID = {Data.InID}", connecton);
 
-                if (email != command.ExecuteScalar().ToString())
+                if (passworld != command.ExecuteScalar().ToString())
                 {
-                    if (j >= 16)
-                    {
-                        return false; 
-                    }
+                    return false;
                 }
-                else
-                {
-                    InId = j;
-                    return true;
-                }
+
+                connecton.Close();
+                return true;
             }
-
-            Console.WriteLine(InId);
-            OleDbCommand command2 = new OleDbCommand($"SELECT Acc_Password FROM [Accounts] WHERE Acc_ID = {InId}", connecton);
-            Console.WriteLine(command2.ExecuteScalar().ToString());//
-            if (passworld != command2.ExecuteScalar().ToString())
+            catch (Exception e)
             {
+                Console.WriteLine("Error:" + e.ToString());
                 return false;
             }
-
-            connecton.Close();
-            return true;
         }
 
         public static bool CheckClientEmail(string email)//Проверка email
@@ -70,8 +49,8 @@ namespace Server
             OleDbConnection connection = new OleDbConnection(ConnectCmd);
             connection.Open();
 
-            int j = 0;
-            for (int i = 0; i < 16; i++)
+            long j = 0;
+            for (long i = 0; i <= 16; i++)
             {
                 j += 1;
 
@@ -87,6 +66,7 @@ namespace Server
                 }
                 else
                 {
+                    Data.InID = j;
                     return true;
                 }
             }
@@ -113,9 +93,9 @@ namespace Server
             }
         }
 
-        public static long GetLastIdAccount()//Error! (Исправлено)
+        /*public static long GetLastIdAccount()//Error! (Исправлено)
         {
-            /*
+            
             OleDbConnection connection = new OleDbConnection(ConnectCmd);
             connection.Open();
 
@@ -124,10 +104,14 @@ namespace Server
             connection.Close();
 
             return answer;
-            */
+            
 
             var set = (Settings)Data.Settings;
             return set.LastId;
-        }
+        }*/
+        /*public static void GetClientInfo(string email, string passworld)//TODO
+        {
+
+        }*/
     }
 }
