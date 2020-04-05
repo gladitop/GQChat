@@ -263,6 +263,7 @@ namespace Server
                 //Проверка
 
                 bool checkNewAccount = Database.CheckClientEmail(email);
+                //Если true, то email такой есть
 
                 if (checkNewAccount)//!!!
                 {
@@ -275,7 +276,7 @@ namespace Server
                     Console.WriteLine("1");
                     var set = (Settings)Data.Settings;
                     set.LastId = Database.GetLastIdAccount() + 1;
-                    Database.AccountAdd(email, passworld, nick);
+                    Database.AccountAdd(email, passworld, nick, set.LastId);
                     client.Client.Send(Encoding.UTF8.GetBytes("1"));
 
                     WriteLine($"Новый аккаунт! {email}, {passworld}", ConsoleColor.Green);
@@ -287,6 +288,7 @@ namespace Server
             else if (answer.Contains("%LOG"))//Вход
             {
                 //email
+
                 answer = Encoding.UTF8.GetString(buffer, 0, messi);
 
                 Match regex = Regex.Match(answer, "%LOG:(.*):(.*)");//Антон!

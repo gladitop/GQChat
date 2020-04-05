@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Net.Sockets;
 
 namespace Server
@@ -8,6 +9,7 @@ namespace Server
         //Все подключенные клиенты
         public static List<ClientConnectOnly> ClientsOnlyData { get; set; } = new List<ClientConnectOnly>();
         public static object Settings { get; set; }//Настройки
+        public static long InID { get; set; }//специально для Антона (смотреть класс Database)
 
         //Прочее
 
@@ -28,6 +30,18 @@ namespace Server
             public string Email { get; set; }//Почта
             public string Passworld { get; set; }//Пароль
             public long ID { get; set; }//ID клиента
+        }
+
+        public class IMessageInfoChat//Информация для отдельного чата
+        {
+            public IMessageInfoChat(long lastId, string nameTable)
+            {
+                LastID = lastId;
+                NameTable = nameTable;
+            }
+
+            public long LastID { get; set; }//id последниго сообщение
+            public string NameTable { get; set; }//Имя таблицы в базе данных
         }
     }
 }

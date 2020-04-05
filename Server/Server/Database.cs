@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Data.OleDb;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace Server
 {
     public static class Database///TODO Проверить команды sql (готово)
     { 
-        //Думаю лучше с база данной работать с 64 битной системой, а не 32 битной
-        public const string ConnectCmd = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=DataBase.mdb;";
+        /*
+        Думаю лучше с база данной работать с 64 битной системой, а не 32 битной
+        (наверно это не правда)
+        */
+       
+        public const string ConnectCmd = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=GladiData.MDB;";
 
         public static string GetMessageCountLast(long messCount)//TODO
         {
@@ -20,7 +25,7 @@ namespace Server
             OleDbConnection connection = new OleDbConnection(ConnectCmd);
             connection.Open();
 
-            OleDbCommand command = new OleDbCommand($"SELECT Acc_ID FROM [Accounts] WHERE Acc_Email = {email}",
+            OleDbCommand command = new OleDbCommand($"SELECT w_id FROM w_accounts WHERE w_email = '{email}'",
                 connection);
 
             string answer = command.ExecuteScalar().ToString();
@@ -34,7 +39,7 @@ namespace Server
             OleDbConnection connection = new OleDbConnection(ConnectCmd);
             connection.Open();
 
-            OleDbCommand command = new OleDbCommand($"SELECT Acc_Nick FROM [Accounts] WHERE Acc_Email = {email}", 
+            OleDbCommand command = new OleDbCommand($"SELECT w_nick FROM w_accounts WHERE w_email = '{email}'", 
                 connection);
 
             string answer = command.ExecuteScalar().ToString();
@@ -50,10 +55,15 @@ namespace Server
                 OleDbConnection connection = new OleDbConnection(ConnectCmd);
                 connection.Open();
 
-                OleDbCommand command = new OleDbCommand($"SELECT Acc_Password FROM [Accounts] WHERE Acc_Email = {email}",
+                OleDbCommand command = new OleDbCommand($"SELECT w_passworld FROM w_accounts WHERE w_email = '{email}'",
                     connection);
 
-                if (email == command.ExecuteScalar().ToString())
+                string emailCheck = command.ExecuteScalar().ToString();
+
+                if (emailCheck == null)
+                    goto linkCheckClientPasswordFalse;
+
+                if (email == emailCheck)
                 {
                     goto linkCheckClientPasswordTrue;
                 }
@@ -72,7 +82,7 @@ namespace Server
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.Message + " Проверка passworld");
                 return false;
             }
 
@@ -81,21 +91,42 @@ namespace Server
 
         public static bool CheckClientEmail(string email)//Проверка email
         {
+            /*
             try
             {
                 OleDbConnection connection = new OleDbConnection(ConnectCmd);
                 connection.Open();
 
-                OleDbCommand command = new OleDbCommand($"SELECT Acc_Email FROM [Accounts] WHERE Acc_Email = {email}",
-                    connection);
+                //OleDbCommand command = new OleDbCommand($"SELECT w_email FROM w_accounts WHERE w_email = '{email}'",
+                //    connection);
 
-                if (email == command.ExecuteScalar().ToString())
-                {
-                    goto linkCheckClientEmailTrue;
-                }
-                else
-                {
+                OleDbCommand command = new OleDbCommand($"SELECT EXISTS (SELECT w_email FROM w_accounts WHERE w_email = '{email}' = 1)", connection);
+
+                string lol = string.Empty == command.ExecuteScalar().ToString() ? 
+                    "" : command.ExecuteScalar().ToString();
+                Console.WriteLine(lol = " LOL");
+
+                if (Convert.ToString(command.ExecuteScalar()).ToString() == "")
                     goto linkCheckClientEmailFalse;
+
+                string emailCheck = command.ExecuteScalar().ToString();
+
+                emailCheck = Convert.ToString(emailCheck);
+                Console.WriteLine(emailCheck + " Это проверка email");
+                
+                //read.Close();
+
+                //emailCheck = command.ExecuteScalar().ToString();
+
+                if (email == emailCheck)
+                {
+                    Console.WriteLine("true");
+                    goto linkCheckClientEmailTrue;//Есть email
+                }
+                else if (email != emailCheck)
+                {
+                    Console.WriteLine("False");
+                    goto linkCheckClientEmailFalse;//Нет email!
                 }
 
             linkCheckClientEmailTrue:
@@ -108,11 +139,66 @@ namespace Server
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.Message + " Проверка email");
                 return false;
             }
 
             //P.S. Если он нечего не найдёт, то будет исключение
+
+            Эти сатанисты не сделали нормальные sql команды!!!
+            */
+
+            OleDbConnection connection = new OleDbConnection(ConnectCmd);
+            connection.Open();
+
+            //true - Есть email!
+            //false - Нет email!
+
+            var settings = (Settings)Data.Settings;//Антон!
+            long j = 0;
+            for (long i = 0; i <= settings.LastId; i++)
+            {
+                j += 1;
+
+                // создаем запрос к БД MS Access
+                OleDbCommand command = new OleDbCommand($"SELECT w_email FROM w_accounts WHERE w_id = {j}", connection);
+                //SELECT w_email FROM w_accounts WHERE w_email = '{email}'
+                OleDbDataReader reader = command.ExecuteReader();
+
+                //reader.FieldCount; TODO
+
+                while (reader.Read())
+                {
+                    string lol = "";
+                    for (int ii = 0; ii <= reader.FieldCount; ii++)//!!! Нет long
+                    {
+                        try
+                        {
+                            lol = Convert.ToString(reader[ii]);
+                            Console.WriteLine(lol);
+
+                            if(lol == email)
+                                return true;
+                        }
+                        catch { Console.WriteLine($"Ошибка в {ii} и {lol}"); }
+                    }
+                }
+
+                /*
+                if (!string.IsNullOrWhiteSpace(command.ExecuteScalar().ToString()))
+                {
+                    if (email == command.ExecuteScalar().ToString())//Ссылка на объект не указывает на экземпляр объекта!
+                    {
+                        return true;
+                    }
+                }
+                */
+
+                reader.Close();
+            }
+
+            connection.Close();
+            return false;
         }
 
         public static long GetLastIdAccount()//Error! (Исправлено)
@@ -132,22 +218,22 @@ namespace Server
             return set.LastId;
         }
 
-        public static void AccountAdd(string email, string passworld, string nick)//Добавить в аккаунт ERROR
+        public static void AccountAdd(string email, string passworld, string nick, long id)//Добавить в аккаунт ERROR
         {
             try
             {
                 OleDbConnection connection = new OleDbConnection(ConnectCmd);
                 connection.Open();
 
-                OleDbCommand command = new OleDbCommand($"INSERT INTO [Accounts] (Acc_Email, Acc_Password, Acc_Nick)" +
-                    $" VALUES ('{email}', '{passworld}', '{nick}')", connection);
+                OleDbCommand command = new OleDbCommand($"INSERT INTO w_accounts (w_id, w_email, w_passworld, w_nick)" +
+                    $" VALUES ({id}, '{email}', '{passworld}', '{nick}')", connection);
 
                 command.ExecuteNonQuery();
                 connection.Close();
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.Message + " Добавить аккаунт");
             }
         }
     }
