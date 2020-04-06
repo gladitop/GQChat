@@ -268,7 +268,7 @@ namespace Server
                 if (checkNewAccount)//!!!
                 {
                     Console.WriteLine("0");
-                    client.Client.Send(Encoding.UTF8.GetBytes("%REG:Такой email уже используется"));
+                    client.Client.Send(Encoding.UTF8.GetBytes("%REGWRONGEMAIL"));
                     goto linkCommand;
                 }
                 else
@@ -277,7 +277,7 @@ namespace Server
                     var set = (Settings)Data.Settings;
                     set.LastId = Database.GetLastIdAccount() + 1;
                     Database.AccountAdd(email, passworld, nick, set.LastId);
-                    client.Client.Send(Encoding.UTF8.GetBytes("1"));
+                    client.Client.Send(Encoding.UTF8.GetBytes("%REGOD"));
 
                     WriteLine($"Новый аккаунт! {email}, {passworld}", ConsoleColor.Green);
                     Data.Settings = set;
@@ -293,11 +293,11 @@ namespace Server
 
                 Match regex = Regex.Match(answer, "%LOG:(.*):(.*)");//Антон!
                 string email = regex.Groups[1].Value;
-
+                Console.WriteLine(email);
                 //пароль
 
                 string passworld = regex.Groups[2].Value;
-
+                Console.WriteLine(passworld);
                 //Проверка email
 
                 bool checkClient = Database.CheckClientEmail(email);
@@ -305,7 +305,7 @@ namespace Server
                 if (checkClient)
                 {
                     //networkClient.Write(Encoding.UTF8.GetBytes("0"), 0, buffer.Length);
-                    client.Client.Send(Encoding.UTF8.GetBytes("%LOG:Неверный пароль или email"));// False
+                    client.Client.Send(Encoding.UTF8.GetBytes("%LOGWRONGEMAIL"));// False
                     goto linkCommand;
                 }
                 else
@@ -316,12 +316,12 @@ namespace Server
 
                     if (!checkPassworld)//!!!
                     {
-                        client.Client.Send(Encoding.UTF8.GetBytes("%LOG:Неверный пароль или email"));
+                        client.Client.Send(Encoding.UTF8.GetBytes("%LOGWRONGEPASS"));
                         goto linkCommand;
                     }
                     else
                     {
-                        client.Client.Send(Encoding.UTF8.GetBytes("1"));
+                        client.Client.Send(Encoding.UTF8.GetBytes("%LOGOD"));
 
                         //Инцилизация!
 

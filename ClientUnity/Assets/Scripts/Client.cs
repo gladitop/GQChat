@@ -12,9 +12,11 @@ public class Client : MonoBehaviour
 {
     public GameObject chatContainer;
     public GameObject messagePrefab;
-    public Text ErrorBoxMessage;
 
     public GameObject[] menu; //0-register 1-logni 2-chat
+    public GameObject MesBox;
+    public Text MessageBox;
+    public GameObject NPS;
 
     private string clientName;
     private string Email;
@@ -60,6 +62,11 @@ public class Client : MonoBehaviour
     bool streg = false;
     float time = 1;
 
+    private void Start()
+    {
+        ConnectedToServer();
+    }
+
     private void Update()
     {
         if (socketReady)
@@ -84,8 +91,25 @@ public class Client : MonoBehaviour
                 menu[0].active = true;
                 menu[1].active = false;
                 menu[2].active = false;
+                NPS.active = true;
+                MesBox.active = true;             
                 time = 1;
                 streg = false;
+            }
+        }
+        if (reg)
+        {          
+            time -= Time.deltaTime;
+            if(time <=0)
+            {
+                NPS.active = false;
+                MesBox.active = false; 
+                menu[0].active = false;
+                menu[1].active = true;
+                menu[2].active = false;
+
+                time = 1;
+                reg = false;
             }
         }
         if (log)
@@ -95,78 +119,53 @@ public class Client : MonoBehaviour
             {
                 menu[0].active = false;
                 menu[1].active = false;
-                menu[2].active = true;
-                time = 1;
+                menu[2].active = true;              
                 GameObject.Find("Reg_Log_Image").active = false;
-                log = false;
-            }
-        }
-        if (reg)
-        {          
-            time -= Time.deltaTime;
-            if(time <=0)
-            {
-                menu[0].active = false;
-                menu[1].active = true;
-                menu[2].active = false;
+
                 time = 1;
-                reg = false;
+                log = false;
             }
         }
     }
 
-    public void An111()
-    {
-   
-    }
-    //Для проверки
-    /*public void StartAnimation()
-    {       
-        GameObject.Find("Image_change_reg_log").GetComponent<Animation>().Play("Change_reg_log");
-        reg = true;
-    }*/ //reg
-    /*public void StartAnimation2()
-    {
-        GameObject.Find("Image_change_reg_log").GetComponent<Animation>().Play("Change_reg_log");
-        log = true;
-    }*/ //log
-    //Конец проверки
-    
     public void GoToRegistration()
     {
         GameObject.Find("Image_change_reg_log").GetComponent<Animation>().Play("Change_reg_log");
+        MessageBox.text = "Введите свои данные";
         streg = true;
-    } //streg
-    //Если не зарегистрировались
+        
+    } //streg | Если не зарегистрировались
+   
+    public void GoToLogin()
+    {
+        GameObject.Find("Image_change_reg_log").GetComponent<Animation>().Play("Change_reg_log");
+        reg = true;
+    }
 
     private void OnIncomingData()
     {
 
         if (message.Contains("%REGOD"))
-        {
-            message.Substring(7);
-            ErrorBoxMessage.text = message;
-
+        {                    
             GameObject.Find("Image_change_reg_log").GetComponent<Animation>().Play("Change_reg_log");
             reg = true;
-        }
+        } //Переход к логину
         if (message.Contains("%LOGOD"))
         {
-            message.Substring(7);
-            ErrorBoxMessage.text = message;
-
             GameObject.Find("Image_change_reg_log").GetComponent<Animation>().Play("Change_reg_log");
             log = true;
-        }
+        } //Переход к чату
 
-        if(message.Contains("%REGWRONGEMAIL"))
+        if (message.Contains("%REGWRONGEMAIL"))
         {
-            GameObject.Find("NPS").GetComponent<Animation>().Play("Wrong_Email");
+            NPS.GetComponent<Animation>().Play("Wrong_Email");
             GameObject.Find("EmailInput").GetComponent<InputField>().text = "";
+            MessageBox.text = "Данный email уже зарегистрирован";
         }
-        if(message.Contains("%REGWRONGEPASS"))
+        if (message.Contains("%LOGWRONGEMAIL") || message.Contains("%LOGWRONGEPASS"))
         {
-            GameObject.Find("NPS").GetComponent<Animation>().Play("Wrong_Password");
+            MessageBox.text = "Данные введены неверно";
+            GameObject.Find("LPassInput").GetComponent<InputField>().text = "";
         }
 
         GameObject go = Instantiate(messagePrefab, chatContainer.transform);
@@ -181,9 +180,8 @@ public class Client : MonoBehaviour
         Pass = GameObject.Find("PassInput").GetComponent<InputField>().text;
         clientName = GameObject.Find("NickInput").GetComponent<InputField>().text;
 
-        Debug.Log(Email + Pass + clientName);
+        Debug.Log("Данные отправленные для регистрации: " + Email + " " + Pass + " " + clientName);
         Send($"%REG:{Email}:{Pass}:{clientName}");
-        GameObject.Find("PassInput").GetComponent<InputField>().text = "";
         Task.Delay(10).Wait();
         return;
     }
@@ -194,6 +192,7 @@ public class Client : MonoBehaviour
         Pass = GameObject.Find("LPassInput").GetComponent<InputField>().text;
         GameObject.Find("LPassInput").GetComponent<InputField>().text = "";
 
+        Debug.Log("Данные отправленные для входа: " + Email + " " + Pass);
         Send($"%LOG:{Email}:{Pass}");
         Task.Delay(10).Wait();
         return;

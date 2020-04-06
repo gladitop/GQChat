@@ -64,6 +64,7 @@ namespace Server
                     connection);
 
                 string emailCheck = command.ExecuteScalar().ToString();
+                Console.WriteLine("password == " + emailCheck);
 
                 if (emailCheck == null)
                     goto linkCheckClientPasswordFalse;
