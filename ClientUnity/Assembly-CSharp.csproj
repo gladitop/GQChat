@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Client.cs" />
     <Compile Include="Assets\Scripts\Server.cs" />
+    <None Include="Assets\Meshtint Free Barbarian\www.meshtint.com.txt" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>C:/Users/Admin/Desktop/GQChat/ClientUnity/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>

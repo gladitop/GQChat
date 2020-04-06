@@ -115,6 +115,10 @@ public class Client : MonoBehaviour
         }
     }
 
+    public void An111()
+    {
+   
+    }
     //Для проверки
     /*public void StartAnimation()
     {       
@@ -145,10 +149,6 @@ public class Client : MonoBehaviour
 
             GameObject.Find("Image_change_reg_log").GetComponent<Animation>().Play("Change_reg_log");
             reg = true;
-
-            menu[0].active = false;
-            menu[1].active = true;
-            menu[2].active = false;
         }
         if (message.Contains("%LOGOD"))
         {
@@ -157,10 +157,16 @@ public class Client : MonoBehaviour
 
             GameObject.Find("Image_change_reg_log").GetComponent<Animation>().Play("Change_reg_log");
             log = true;
+        }
 
-            menu[0].active = false;
-            menu[1].active = false;
-            menu[2].active = true;
+        if(message.Contains("%REGWRONGEMAIL"))
+        {
+            GameObject.Find("NPS").GetComponent<Animation>().Play("Wrong_Email");
+            GameObject.Find("EmailInput").GetComponent<InputField>().text = "";
+        }
+        if(message.Contains("%REGWRONGEPASS"))
+        {
+            GameObject.Find("NPS").GetComponent<Animation>().Play("Wrong_Password");
         }
 
         GameObject go = Instantiate(messagePrefab, chatContainer.transform);
@@ -177,6 +183,7 @@ public class Client : MonoBehaviour
 
         Debug.Log(Email + Pass + clientName);
         Send($"%REG:{Email}:{Pass}:{clientName}");
+        GameObject.Find("PassInput").GetComponent<InputField>().text = "";
         Task.Delay(10).Wait();
         return;
     }
