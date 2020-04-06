@@ -55,6 +55,11 @@ public class Client : MonoBehaviour
         }
     }
 
+    bool reg = false;
+    bool log = false;
+    bool streg = false;
+    float time = 1;
+
     private void Update()
     {
         if (socketReady)
@@ -70,7 +75,65 @@ public class Client : MonoBehaviour
                     
             }
         }
+
+        if (streg)
+        {
+            time -= Time.deltaTime;
+            if (time <= 0)
+            {
+                menu[0].active = true;
+                menu[1].active = false;
+                menu[2].active = false;
+                time = 1;
+                streg = false;
+            }
+        }
+        if (log)
+        {
+            time -= Time.deltaTime;
+            if (time <= 0)
+            {
+                menu[0].active = false;
+                menu[1].active = false;
+                menu[2].active = true;
+                time = 1;
+                GameObject.Find("Reg_Log_Image").active = false;
+                log = false;
+            }
+        }
+        if (reg)
+        {          
+            time -= Time.deltaTime;
+            if(time <=0)
+            {
+                menu[0].active = false;
+                menu[1].active = true;
+                menu[2].active = false;
+                time = 1;
+                reg = false;
+            }
+        }
     }
+
+    //Для проверки
+    /*public void StartAnimation()
+    {       
+        GameObject.Find("Image_change_reg_log").GetComponent<Animation>().Play("Change_reg_log");
+        reg = true;
+    }*/ //reg
+    /*public void StartAnimation2()
+    {
+        GameObject.Find("Image_change_reg_log").GetComponent<Animation>().Play("Change_reg_log");
+        log = true;
+    }*/ //log
+    //Конец проверки
+    
+    public void GoToRegistration()
+    {
+        GameObject.Find("Image_change_reg_log").GetComponent<Animation>().Play("Change_reg_log");
+        streg = true;
+    } //streg
+    //Если не зарегистрировались
 
     private void OnIncomingData()
     {
@@ -79,6 +142,10 @@ public class Client : MonoBehaviour
         {
             message.Substring(7);
             ErrorBoxMessage.text = message;
+
+            GameObject.Find("Image_change_reg_log").GetComponent<Animation>().Play("Change_reg_log");
+            reg = true;
+
             menu[0].active = false;
             menu[1].active = true;
             menu[2].active = false;
@@ -87,6 +154,10 @@ public class Client : MonoBehaviour
         {
             message.Substring(7);
             ErrorBoxMessage.text = message;
+
+            GameObject.Find("Image_change_reg_log").GetComponent<Animation>().Play("Change_reg_log");
+            log = true;
+
             menu[0].active = false;
             menu[1].active = false;
             menu[2].active = true;
