@@ -52,6 +52,11 @@ namespace Server
         {
             try
             {
+                // true - правильный пароль
+                // false - неверный пароль
+
+                //SELECT COUNT(*) FROM People Where Имя = 'Mihail'
+
                 OleDbConnection connection = new OleDbConnection(ConnectCmd);
                 connection.Open();
 
@@ -92,61 +97,6 @@ namespace Server
         public static bool CheckClientEmail(string email)//Проверка email
         {
             /*
-            try
-            {
-                OleDbConnection connection = new OleDbConnection(ConnectCmd);
-                connection.Open();
-
-                //OleDbCommand command = new OleDbCommand($"SELECT w_email FROM w_accounts WHERE w_email = '{email}'",
-                //    connection);
-
-                OleDbCommand command = new OleDbCommand($"SELECT EXISTS (SELECT w_email FROM w_accounts WHERE w_email = '{email}' = 1)", connection);
-
-                string lol = string.Empty == command.ExecuteScalar().ToString() ? 
-                    "" : command.ExecuteScalar().ToString();
-                Console.WriteLine(lol = " LOL");
-
-                if (Convert.ToString(command.ExecuteScalar()).ToString() == "")
-                    goto linkCheckClientEmailFalse;
-
-                string emailCheck = command.ExecuteScalar().ToString();
-
-                emailCheck = Convert.ToString(emailCheck);
-                Console.WriteLine(emailCheck + " Это проверка email");
-                
-                //read.Close();
-
-                //emailCheck = command.ExecuteScalar().ToString();
-
-                if (email == emailCheck)
-                {
-                    Console.WriteLine("true");
-                    goto linkCheckClientEmailTrue;//Есть email
-                }
-                else if (email != emailCheck)
-                {
-                    Console.WriteLine("False");
-                    goto linkCheckClientEmailFalse;//Нет email!
-                }
-
-            linkCheckClientEmailTrue:
-                connection.Close();
-                return true;
-
-            linkCheckClientEmailFalse:
-                connection.Close();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message + " Проверка email");
-                return false;
-            }
-
-            //P.S. Если он нечего не найдёт, то будет исключение
-
-            Эти сатанисты не сделали нормальные sql команды!!!
-            */
 
             OleDbConnection connection = new OleDbConnection(ConnectCmd);
             connection.Open();
@@ -192,13 +142,33 @@ namespace Server
                         return true;
                     }
                 }
-                */
+                
 
                 reader.Close();
             }
 
             connection.Close();
             return false;
+            */
+
+
+
+            // true - есть email
+            // false - нет email
+
+            //SELECT COUNT(*) FROM People Where Имя = 'Mihail'
+
+            OleDbConnection connection = new OleDbConnection(ConnectCmd);
+            OleDbCommand command = new OleDbCommand($"SELECT COUNT(*) FROM w_accounts Where w_email = '{email}'",
+                connection);
+
+            connection.Open();
+            int answer = (int)command.ExecuteScalar();//!!!
+
+            if (answer == 0)
+                return false;
+            else
+                return true;
         }
 
         public static long GetLastIdAccount()//Error! (Исправлено)

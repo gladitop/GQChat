@@ -32,11 +32,11 @@ namespace GQChat.Other.Pages
 
         private void btLogin_Click(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(tbEmail.Text))
+            if (string.IsNullOrWhiteSpace(tbEmail.Text))
             {
                 MessageBox.Show("Напишите email!", "GQChat: Вход", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            else if (!string.IsNullOrWhiteSpace(tbPassworld.Password))
+            else if (string.IsNullOrWhiteSpace(tbPassworld.Password))
             {
                 MessageBox.Show("Напишите пароль!", "GQChat: Вход", MessageBoxButton.OK, MessageBoxImage.Error);
             }

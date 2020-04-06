@@ -314,7 +314,7 @@ namespace Server
 
                     bool checkPassworld = Database.CheckClientPassworld(passworld);
 
-                    if (checkPassworld)
+                    if (!checkPassworld)//!!!
                     {
                         client.Client.Send(Encoding.UTF8.GetBytes("%LOG:Неверный пароль или email"));
                         goto linkCommand;
@@ -328,6 +328,8 @@ namespace Server
                         Data.ClientConnectOnly onlyClient = new Data.ClientConnectOnly(client,
                             Database.GetNickClient(email), email, passworld, Database.GetIdClient(email));
                         Data.ClientsOnlyData.Add(onlyClient);
+                        Console.WriteLine($"{onlyClient.Email} {onlyClient.ID} {onlyClient.Nick} " +
+                            $"{onlyClient.Passworld}");
 
                         Thread thread = new Thread(new ParameterizedThreadStart(MessagesClient))
                         {
