@@ -1,11 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 using System.IO;
-using System.Data;
 
 namespace Server
 {
@@ -40,16 +35,16 @@ namespace Server
             }
             else
             {
-                var settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(FilePath));
+                Settings settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(FilePath));
                 Data.Settings = settings;
             }
         }
 
         public static void Save()
         {
-            var settings = (Settings)Data.Settings;
+            Settings settings = (Settings)Data.Settings;
 
-            var set = new Settings()
+            Settings set = new Settings()
             {
                 LastId = settings.LastId,
                 LastIdMessMain = settings.LastIdMessMain,

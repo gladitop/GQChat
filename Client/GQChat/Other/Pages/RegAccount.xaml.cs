@@ -76,7 +76,7 @@ namespace GQChat.Other.Pages
                         int messi = client.Client.Receive(buffer);
 
                         string answer = Encoding.UTF8.GetString(buffer, 0, messi);
-                        if (answer == "1")
+                        if (answer == "%REGOD")
                         {
                             Data.TcpClient = client;
                             Data.LoginSucces = true;

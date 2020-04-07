@@ -57,5 +57,10 @@ namespace GQChat
                 }));
             }
         }
+
+        private void logininaccount_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Environment.Exit(0);
+        }
     }
 }

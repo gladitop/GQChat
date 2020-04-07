@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -43,7 +42,7 @@ namespace Server
             Environment.Exit(0);
         }
 
-        static void DisconnectClients()
+        private static void DisconnectClients()
         {
             foreach (Data.ClientConnectOnly client in Data.ClientsOnlyData)
             {
@@ -274,7 +273,7 @@ namespace Server
                 else
                 {
                     Console.WriteLine("1");
-                    var set = (Settings)Data.Settings;
+                    Settings set = (Settings)Data.Settings;
                     set.LastId = Database.GetLastIdAccount() + 1;
                     Database.AccountAdd(email, passworld, nick, set.LastId);
                     client.Client.Send(Encoding.UTF8.GetBytes("%REGOD"));
@@ -302,10 +301,11 @@ namespace Server
 
                 bool checkClient = Database.CheckClientEmail(email);
 
-                if (checkClient)
+                if (!checkClient)
                 {
                     //networkClient.Write(Encoding.UTF8.GetBytes("0"), 0, buffer.Length);
                     client.Client.Send(Encoding.UTF8.GetBytes("%LOGWRONGEMAIL"));// False
+                    WriteLine("Неправильный email!", ConsoleColor.Red);
                     goto linkCommand;
                 }
                 else
@@ -316,18 +316,23 @@ namespace Server
 
                     if (!checkPassworld)//!!!
                     {
+                        Console.WriteLine("%LOGWRONGEPASS");
                         client.Client.Send(Encoding.UTF8.GetBytes("%LOGWRONGEPASS"));
+                        WriteLine($"Неправильный пароли в {email}!", ConsoleColor.Red);
                         goto linkCommand;
                     }
                     else
                     {
+                        Console.WriteLine("%LOGOD");
                         client.Client.Send(Encoding.UTF8.GetBytes("%LOGOD"));
 
                         //Инцилизация!
 
                         Data.ClientConnectOnly onlyClient = new Data.ClientConnectOnly(client,
                             Database.GetNickClient(email), email, passworld, Database.GetIdClient(email));
+
                         Data.ClientsOnlyData.Add(onlyClient);
+
                         Console.WriteLine($"{onlyClient.Email} {onlyClient.ID} {onlyClient.Nick} " +
                             $"{onlyClient.Passworld}");
 
@@ -335,6 +340,7 @@ namespace Server
                         {
                             IsBackground = true
                         };
+
                         thread.Start(onlyClient);
                         WriteLine($"Вход аккаунт! {email}, {passworld}", ConsoleColor.Green);
 
