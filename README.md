@@ -71,7 +71,7 @@ patent rights.
 | `%MSE`         | Отправить сообщение в от. чат | `%MSE:idChat:textMess`          |
 | `%MES`         | Отправить сообщение в об. чат | `%MES:textMess`                 |
 | `%INF`         | Получить инфо о аккаунте      | `%INF:idUser`                   |
-| `%DEL`         | Удалить аккаунт               | `%DEL:idUser`                   |
+| `%DEL`         | Удалить аккаунт               | `%DEL`                          |
 | `%SЕM`         | Отправить файл в об. чат      | `%SEM:textMess:fileName`        |
 | `%SMM`         | Отправить файл в от. чат      | `%SEM:textMess:fileName:idChat` |
 

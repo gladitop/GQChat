@@ -15,13 +15,14 @@ namespace Server
         public class ClientConnectOnly//инфа о клиенте (онлайн) (ТОЛЬКО ДЛЯ СЕРВЕРА)
         {
             public ClientConnectOnly(TcpClient tcpClient, string nick, string email,
-                string passworld, long id)
+                string passworld, long id, UserAvatar userAvatar)
             {
                 ClientSocket = tcpClient;
                 Nick = nick;
                 Email = email;
                 Passworld = passworld;
                 ID = id;
+                UserAvatar = userAvatar;
             }
 
             public TcpClient ClientSocket { get; set; }//Сокет
@@ -29,6 +30,7 @@ namespace Server
             public string Email { get; set; }//Почта
             public string Passworld { get; set; }//Пароль
             public long ID { get; set; }//ID клиента
+            public UserAvatar { get; set; }//Аватар клиента
         }
 
         public class IMessageInfoChat//Информация для отдельного чата
@@ -41,6 +43,16 @@ namespace Server
 
             public long LastID { get; set; }//id последниго сообщение
             public string NameTable { get; set; }//Имя таблицы в базе данных
+        }
+
+        public enum UserAvatar// Тип аватарки клиента
+        {
+        	Avatar1 = 1,
+        	Avatar2 = 2,
+        	Avatar3 = 3,
+        	Avatar4 = 4,
+        	Avatar5 = 5,
+        	Custom = 6 //Своя загружаная аватарка
         }
     }
 }
