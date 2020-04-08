@@ -150,27 +150,31 @@ public class Client : MonoBehaviour
             GameObject.Find("Image_change_reg_log").GetComponent<Animation>().Play("Change_reg_log");
             reg = true;
         } //Переход к логину
-        if (message.Contains("%LOGOD"))
+        else if (message.Contains("%LOGOD"))
         {
             GameObject.Find("Image_change_reg_log").GetComponent<Animation>().Play("Change_reg_log");
             log = true;
         } //Переход к чату
-
-        if (message.Contains("%REGWRONGEMAIL"))
+        else if (message.Contains("%REGWRONGEMAIL"))
         {
             NPS.GetComponent<Animation>().Play("Wrong_Email");
             GameObject.Find("EmailInput").GetComponent<InputField>().text = "";
             MessageBox.text = "Данный email уже зарегистрирован";
         }
-        if (message.Contains("%LOGWRONGEMAIL") || message.Contains("%LOGWRONGEPASS"))
+        else if (message.Contains("%LOGWRONGEMAIL") || message.Contains("%LOGWRONGEPASS"))
         {
             MessageBox.text = "Данные введены неверно";
             GameObject.Find("LPassInput").GetComponent<InputField>().text = "";
         }
+        else if (message.Contains("%MME"))
+        {
+            message = message.Substring(5);
+            GameObject go = Instantiate(messagePrefab, chatContainer.transform);
+            go.GetComponentInChildren<Text>().text = message;
+            Destroy(go, 10);
+        }
 
-        GameObject go = Instantiate(messagePrefab, chatContainer.transform);
-        go.GetComponentInChildren<Text>().text = message;
-        Destroy(go, 10);
+        
     }
 
     //\\ 
@@ -212,7 +216,7 @@ public class Client : MonoBehaviour
     {
         string message = GameObject.Find("SendInput").GetComponent<InputField>().text;
         GameObject.Find("SendInput").GetComponent<InputField>().text = "";
-        Send(message);
+        Send($"%MES:{message}");
     }
 
     private void CloseSocket()
