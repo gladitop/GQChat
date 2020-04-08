@@ -37,7 +37,7 @@ public class Client : MonoBehaviour
             return;
 
         //Defalt host / post values
-        string host = "127.0.0.1";
+        string host = "77.108.206.67";
         int port = 908;
 
         
