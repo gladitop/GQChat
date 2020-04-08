@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -11,8 +12,9 @@ namespace Server
 {
     internal class Program
     {
-        private static readonly TcpListener server = new TcpListener(IPAddress.Any, 908);
-        private static readonly StreamWriter sw = new StreamWriter("Log.txt");
+        private static readonly TcpListener server = new TcpListener(IPAddress.Any, 908);//Порт
+        private static readonly StreamWriter sw = new StreamWriter("Log.txt");//Где сохранить логи
+        const int delayCheckClient = 10000;//Сколько ждать при проверки клиентов
 
         //static NetworkStream networkStream;
 
@@ -35,14 +37,62 @@ namespace Server
             };
             thread.Start();
 
+            WriteLine("Подключение системы очистки...", ConsoleColor.Yellow);
+
+            thread = new Thread(new ParameterizedThreadStart(CheckConnectClients));
+            thread.Start(delayCheckClient);
+
             WriteLine("Сервер запущен!", ConsoleColor.Green);
             Console.ReadLine();
+
+            WriteLine("Завершение работы...", ConsoleColor.Yellow);
+
             sw.Close();
             DisconnectClients();
+            thread.Abort();
             Environment.Exit(0);
         }
 
-        private static void DisconnectClients()
+        static void CheckConnectClients(object i)//Проверяет всех клиентов на подключение
+        {
+            //Загрузка параметров
+
+            int delayCheck = (int)i;
+
+            //Прочее
+            IPEndPoint ipClient;//Ip клиента для проверки
+            Ping pingClient;//Для ping
+            PingReply pingReply;//Результат ping
+            bool haveClient = false;//Есть клиенты которые не прошли проверку?
+            long CountClient = 0;//Количество клиентов которые не прошли проверку
+
+            while (true)
+            {
+                Task.Delay(delayCheck).Wait();
+                foreach (Data.ClientConnectOnly connectOnly in Data.ClientsOnlyData)
+                {
+                    ipClient = (IPEndPoint)connectOnly.ClientSocket.Client.RemoteEndPoint;
+                    pingClient = new Ping();
+                    pingReply = pingClient.Send(ipClient.Address);
+
+                    if (pingReply.Status != IPStatus.Success)
+                    {
+                        connectOnly.ClientSocket.Close();
+                        Data.ClientsOnlyData.Remove(connectOnly);
+                        WriteLine($"При проверки обнаружен клиент: {connectOnly.ID}", ConsoleColor.Red);
+                        haveClient = true;
+                        CountClient++;
+                    }
+                }
+
+                if (haveClient)
+                {
+                    WriteLine($"Проверка завершина! Всего клиентов: {CountClient}", ConsoleColor.Green);
+                }
+            }
+        }
+
+        private static void DisconnectClients()//Отключение всеъ клиентов
         {
             foreach (Data.ClientConnectOnly client in Data.ClientsOnlyData)
             {
@@ -173,19 +223,52 @@ namespace Server
                 }
                 else if (answer.Contains("%INF"))//Получить информацию о аккаунте
                 {
+                    int idClient = int.Parse(answer.Substring(5));//%INF:{}
 
+                    Data.ClientConnectOffline client = Database.GetClientInfo(idClient);
+
+                    //%INF:{email}:{id}:{nick}:{avatar}
+
+                    if (client.UserAvatar != Data.UserAvatar.Custom)
+                    {
+                        buffer = Encoding.UTF8.GetBytes($"%INF:{client.Email}:{client.ID}:{client.Nick}:" +
+                            $"{client.UserAvatar}");
+                    }
+                    else
+                    {
+                        //TODO
+                    }
                 }
                 else if (answer.Contains("%DEL"))//Удалить аккаунт
                 {
+                    //Подтверждение (пароль)
 
+                    
                 }
                 else if (answer.Contains("%SЕM"))//Отправить файл (Сообщение) (( В общий чат ))
                 {
 
                 }
-                else if (answer.Contains("%SMM"))//Отправить файл (Сообщение) (( В личный чат ))
+                else if (answer.Contains("%UUS"))//Обновление клиентов (только онлайн)
                 {
+                    NetworkStream networkStream = onlyClient.ClientSocket.GetStream();
+                    string stringTemp = $"%UUS:{Data.ClientsOnlyData.Count}:";
 
+                    foreach (Data.ClientConnectOnly client in Data.ClientsOnlyData)
+                    {
+                        stringTemp += $"{client.Nick};{client.ID}:";
+                    }
+                    Console.WriteLine(stringTemp);
+
+                    byte[] answerUUS = Encoding.UTF8.GetBytes(stringTemp);
+                    networkStream.Write(answerUUS, 0, answerUUS.Length);
+                }
+                else//TODO: Это потом для API!
+                {
+                    //Обработак ошибок
+                    //Просто отправить что команды не известна
+                    //Да я ОЧЕНЬ ленивый программист
+                    //Gladi (384 до н. э.)
                 }
             }
         }
@@ -329,7 +412,8 @@ namespace Server
                         //Инцилизация!
 
                         Data.ClientConnectOnly onlyClient = new Data.ClientConnectOnly(client,
-                            Database.GetNickClient(email), email, passworld, Database.GetIdClient(email));
+                            Database.GetNickClient(email), email, passworld, Database.GetIdClient(email), 
+                            Data.UserAvatar.Avatar1);
 
                         Data.ClientsOnlyData.Add(onlyClient);
 

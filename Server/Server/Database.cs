@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.OleDb;
+using System.Security.AccessControl;
 
 namespace Server
 {
@@ -8,15 +9,75 @@ namespace Server
         /*
         Думаю лучше с база данной работать с 64 битной системой, а не 32 битной
         (наверно это не правда)
+        P.S. Так и есть
         */
 
         public const string ConnectCmd = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=GladiData.MDB;";
 
-        public static string GetMessageCountLast(long messCount)//TODO
+        public static Data.ClientConnectOffline GetClientInfo(long id)//Получить инфо о клиенте
         {
+            //Ник
 
+            string nick = GetNickClient(id);
 
-            return "";
+            //Пароль
+
+            string passworld = GetClientPassworld(id);
+
+            //Аватарку
+
+            Data.UserAvatar avatar = GetClientAvatar(id);
+
+            //Email
+
+            string email = GetClientEmail(id);
+
+            return new Data.ClientConnectOffline(id, nick, passworld, avatar, email);
+
+            //return new Data.ClientConnectOffline(id, "Gladi", "324252", Data.UserAvatar.Avatar1,
+            //    "gladi@gmail.com");
+        }
+
+        public static string GetClientEmail(long id)
+        {
+            OleDbConnection connection = new OleDbConnection(ConnectCmd);
+            connection.Open();
+
+            OleDbCommand command = new OleDbCommand($"SELECT w_email FROM w_accounts WHERE w_id = {id}",//Проверить!
+                connection);
+
+            string answer = command.ExecuteScalar().ToString();
+            connection.Close();
+
+            return answer;
+        }
+
+        public static Data.UserAvatar GetClientAvatar(long id)//Получить аватарку
+        {
+            //TODO: Добавить в базы данных это надо!
+
+            return Data.UserAvatar.Avatar1;
+        }
+
+        public static string GetClientPassworld(long id)//Получить пароль
+        {
+            OleDbConnection connection = new OleDbConnection(ConnectCmd);
+            connection.Open();
+
+            OleDbCommand command = new OleDbCommand($"SELECT w_pasworld FROM w_accounts WHERE w_id = {id}",//Проверить!
+                connection);
+
+            string answer = command.ExecuteScalar().ToString();
+            connection.Close();
+
+            return answer;
+        }
+
+        public static long GetMessageCountLast(long messCount)//Получить последние id сообщения в общем чате
+        {
+            var settings = (Settings)Data.Settings;
+
+            return settings.LastIdMessMain;
         }
 
         public static long GetIdClient(string email)//Получить id клиента
@@ -33,12 +94,26 @@ namespace Server
             return long.Parse(answer);
         }
 
-        public static string GetNickClient(string email)//Получить ник
+        public static string GetNickClient(string email)//Получить ник (email)
         {
             OleDbConnection connection = new OleDbConnection(ConnectCmd);
             connection.Open();
 
             OleDbCommand command = new OleDbCommand($"SELECT w_nick FROM w_accounts WHERE w_email = '{email}'",
+                connection);
+
+            string answer = command.ExecuteScalar().ToString();
+            connection.Close();
+
+            return answer;
+        }
+
+        public static string GetNickClient(long id)//Получить ник (id)
+        {
+            OleDbConnection connection = new OleDbConnection(ConnectCmd);
+            connection.Open();
+
+            OleDbCommand command = new OleDbCommand($"SELECT w_nick FROM w_accounts WHERE w_id = {id}",//Проверить!
                 connection);
 
             string answer = command.ExecuteScalar().ToString();

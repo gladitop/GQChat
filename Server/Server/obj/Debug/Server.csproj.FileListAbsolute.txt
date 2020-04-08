@@ -27,3 +27,4 @@ C:\Users\Admin\Desktop\GQChat\Server\Server\obj\Debug\Server.csproj.CoreCompileI
 C:\Users\Admin\Desktop\GQChat\Server\Server\obj\Debug\Server.csproj.CopyComplete
 C:\Users\Admin\Desktop\GQChat\Server\Server\obj\Debug\Server.exe
 C:\Users\Admin\Desktop\GQChat\Server\Server\obj\Debug\Server.pdb
+C:\Users\damal\Documents\GitHub\GQChat\Server\Server\obj\Debug\Server.csprojAssemblyReference.cache

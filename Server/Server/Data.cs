@@ -30,7 +30,26 @@ namespace Server
             public string Email { get; set; }//Почта
             public string Passworld { get; set; }//Пароль
             public long ID { get; set; }//ID клиента
-            public UserAvatar { get; set; }//Аватар клиента
+            public UserAvatar UserAvatar { get; set; }//Аватар клиента
+        }
+
+        public class ClientConnectOffline//инфа о клиенте (офлайн) (ТОЛЬКО ДЛЯ СЕРВЕРА)
+        {
+            public ClientConnectOffline(long id, string nick, string passworld, UserAvatar userAvatar,
+                string email)
+            {
+                ID = id;
+                Nick = nick;
+                Passworld = passworld;
+                UserAvatar = userAvatar;
+                Email = email;
+            }
+
+            public long ID { get; set; }
+            public string Nick { get; set; }
+            public string Passworld { get; set; }
+            public UserAvatar UserAvatar { get; set; }
+            public string Email { get; set; }
         }
 
         public class IMessageInfoChat//Информация для отдельного чата
