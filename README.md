@@ -37,6 +37,7 @@
 |-----------------------------------|--------------------------------|-------|
 | `SharpCompress`           | Это библиотека для RAR| [![sharpcompress](https://img.shields.io/nuget/vpre/sharpcompress.svg)](https://www.nuget.org/packages/sharpcompress) |
 | `Newtonsoft.Json`         | Сохранения! | [![Newtonsoft.Json](https://img.shields.io/nuget/vpre/Newtonsoft.Json.svg)](https://www.nuget.org/packages/Newtonsoft.Json) |
+| `ConsoleTables`         | Таблицы! | [![ConsoleTables](https://img.shields.io/nuget/vpre/ConsoleTables.svg)](https://www.nuget.org/packages/ConsoleTables) |
 
 # Папки
 

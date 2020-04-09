@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -8,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using ConsoleTables;
 
 namespace Server
 {
@@ -71,13 +73,17 @@ namespace Server
                 {
                     ShowCountClient();
                 }
+                else if (answerCommand.ToLower() == "client f")//Показать количество клиентов (в таблице)
+                {
+                    ShowCountClientTable();
+                }
                 else if (answerCommand.ToLower() == "help")
                 {
                     HelpCommand();
                 }
                 else//Неизвестная команды
                 {
-                    WriteLine("Неизвестная команда. Напишите help", ConsoleColor.White);
+                    WriteLine("Неизвестная команда. Напишите help", ConsoleColor.Red);
                 }
 
                 Console.WriteLine();//Новая строка
@@ -99,8 +105,10 @@ namespace Server
             WriteLine("%---Qliook - Антикоммунист----------------%", ConsoleColor.Green);
             WriteLine("%---sEKRETNY - Анимешник------------------%", ConsoleColor.Magenta);
             WriteLine("%-----------------------------------------%\n", ConsoleColor.White);
+
             WriteLine("exit - выход из сервера", ConsoleColor.White);
             WriteLine("client c - сколько всего клиентов подключено", ConsoleColor.White);
+            WriteLine("client f - инфо о всех клиентов", ConsoleColor.White);
         }
 
         static void ShowInfoClient(string id)//Информация о клиенте (по id)
@@ -110,7 +118,17 @@ namespace Server
 
         static void ShowCountClientTable()//Показать количество клиентов (в таблице)
         {
-            
+            WriteLine("Подождите...", ConsoleColor.Yellow);
+
+            var table = new ConsoleTable("id", "nick", "email", "passworld");
+
+            foreach (Data.ClientConnectOnly clientinfo in Data.ClientsOnlyData)
+            {
+                table.AddRow(1, 2, 3, 4).AddRow(clientinfo.ID, clientinfo.Nick, clientinfo.Email,
+                    clientinfo.Passworld);
+            }
+
+            WriteLine(table.ToString(), ConsoleColor.White);
         }
 
         private static void DisconnectClients()//Отключение всех клиентов
