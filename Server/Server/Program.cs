@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -12,11 +13,17 @@ namespace Server
 {
     internal class Program
     {
+        #region Настройки
         private static readonly TcpListener server = new TcpListener(IPAddress.Any, 908);//Порт
         private static readonly StreamWriter sw = new StreamWriter("Log.txt");//Где сохранить логи
         const int delayCheckClient = 10000;//Сколько ждать при проверки клиентов
+        const string ver = "1.0";//Версия сервера
+        #endregion
 
+        #region Переменные
+        static string answerCommand;//Для обработак команд
         //static NetworkStream networkStream;
+        #endregion
 
         private static void Main(string[] args)//Запуск сервера
         {
@@ -43,15 +50,128 @@ namespace Server
             thread.Start(delayCheckClient);
 
             WriteLine("Сервер запущен!", ConsoleColor.Green);
-            Console.ReadLine();
 
+            //Команды
+
+            while (true)
+            {
+                answerCommand = Console.ReadLine();
+
+                if (answerCommand.ToLower() == "exit")//Отключение сервера
+                {
+                    OffServer();
+
+                    //Ожидание отключение
+                    while (true)
+                    {
+                        Task.Delay(1000).Wait();
+                    }
+                }
+                else if (answerCommand.ToLower() == "client c")//Количество клиентов (в онлайн)
+                {
+                    ShowCountClient();
+                }
+                else if (answerCommand.ToLower() == "help")
+                {
+                    HelpCommand();
+                }
+                else//Неизвестная команды
+                {
+                    WriteLine("Неизвестная команда. Напишите help", ConsoleColor.White);
+                }
+
+                Console.WriteLine();//Новая строка
+            }
+        }
+
+        #region Команды севрвера
+
+        static void ShowCountClient()//Показать количество клиентов
+        {
+            WriteLine($"Всего клиентов в онлайн: {Data.ClientsOnlyData.Count}", ConsoleColor.White);
+        }
+
+        static void HelpCommand()//Показывеет все команды (help)
+        {
+            WriteLine($"Версия сервера: {ver}\n", ConsoleColor.White);
+            WriteLine("%---------Информация о создателей---------%", ConsoleColor.White);
+            WriteLine("%---Gladi - Самый главный (коммунист)-----%", ConsoleColor.Yellow);
+            WriteLine("%---Qliook - Антикоммунист----------------%", ConsoleColor.Green);
+            WriteLine("%---sEKRETNY - Анимешник------------------%", ConsoleColor.Magenta);
+            WriteLine("%-----------------------------------------%\n", ConsoleColor.White);
+            WriteLine("exit - выход из сервера", ConsoleColor.White);
+            WriteLine("client c - сколько всего клиентов подключено", ConsoleColor.White);
+        }
+
+        static void ShowInfoClient(string id)//Информация о клиенте (по id)
+        {
+            
+        }
+
+        static void ShowCountClientTable()//Показать количество клиентов (в таблице)
+        {
+            
+        }
+
+        private static void DisconnectClients()//Отключение всех клиентов
+        {
+            foreach (Data.ClientConnectOnly client in Data.ClientsOnlyData)
+            {
+                try
+                {
+                    client.ClientSocket.Close();
+                    WriteLine($"Клиент {client.Email}, {client.Passworld} отключился", ConsoleColor.Green);
+                }
+                catch (Exception ex)
+                {
+                    WriteLine($"Ошибка при отключение всех клиентво: {ex}", ConsoleColor.Red);
+                }
+            }
+        }
+
+        static void OffServer()//Отключение сервера
+        {
             WriteLine("Завершение работы...", ConsoleColor.Yellow);
 
             sw.Close();
             DisconnectClients();
-            thread.Abort();
+            server.Stop();
             Environment.Exit(0);
         }
+
+        #endregion
+
+        #region Сообщения
+
+        private static void UpdateMessages(string text, Data.ClientConnectOnly onlyClient)//Для общего чата
+        {
+            try
+            {
+                WriteLine($"Cообщение в общий чат: {onlyClient.Nick}:{text}", ConsoleColor.Green);
+                WriteLine("Отправка сообщениие в этот чат...", ConsoleColor.Yellow);
+
+                byte[] answer = new byte[1024];
+                answer = Encoding.UTF8.GetBytes(text);
+
+                foreach (Data.ClientConnectOnly client in Data.ClientsOnlyData)
+                {
+                    client.ClientSocket.Client.Send(answer);
+                }
+
+                WriteLine($"Сообщение '{text}', отправлено!", ConsoleColor.Green);
+            }
+            catch (Exception ex)
+            {
+                WriteLine($"Ошибка в общем чате: {ex.Message}", ConsoleColor.Red);
+                WriteLine($"Клиент: {onlyClient.Nick} {onlyClient.Email}", ConsoleColor.Green);
+                onlyClient.ClientSocket.Close();
+                Data.ClientsOnlyData.Remove(onlyClient);
+            }
+        }
+
+        #endregion
+
+        #region Управление клиентом
 
         static void CheckConnectClients(object i)//Проверяет всех клиентов на подключение
         {
@@ -92,42 +212,7 @@ namespace Server
             }
         }
 
-        private static void DisconnectClients()//Отключение всеъ клиентов
-        {
-            foreach (Data.ClientConnectOnly client in Data.ClientsOnlyData)
-            {
-                client.ClientSocket.Close();
-                WriteLine($"Клиент {client.Email}, {client.Passworld} отключился", ConsoleColor.Green);
-            }
-        }
-
-        private static void UpdateMessages(string text, Data.ClientConnectOnly onlyClient)//Для общего чата
-        {
-            try
-            {
-                WriteLine($"Cообщение в общий чат: {onlyClient.Nick}:{text}", ConsoleColor.Green);
-                WriteLine("Отправка сообщениие в этот чат...", ConsoleColor.Yellow);
-
-                byte[] answer = new byte[1024];
-                answer = Encoding.UTF8.GetBytes(text);
-
-                foreach (Data.ClientConnectOnly client in Data.ClientsOnlyData)
-                {
-                    client.ClientSocket.Client.Send(answer);
-                }
-
-                WriteLine($"Сообщение '{text}', отправлено!", ConsoleColor.Green);
-            }
-            catch (Exception ex)
-            {
-                WriteLine($"Ошибка в общем чате: {ex.Message}", ConsoleColor.Red);
-                WriteLine($"Клиент: {onlyClient.Nick} {onlyClient.Email}", ConsoleColor.Green);
-                onlyClient.ClientSocket.Close();
-                Data.ClientsOnlyData.Remove(onlyClient);
-            }
-        }
-
-        public static void MessagesMain(string text)//Отправка сообщения в общий чат
+        static void MessagesMain(string text)//Отправка сообщения в общий чат
         {
             WriteLine($"Сообщение в общий чат: {text}", ConsoleColor.Green);
             byte[] buffer = new byte[1024];
@@ -243,7 +328,7 @@ namespace Server
                 {
                     //Подтверждение (пароль)
 
-                    
+
                 }
                 else if (answer.Contains("%SЕM"))//Отправить файл (Сообщение) (( В общий чат ))
                 {
@@ -273,6 +358,16 @@ namespace Server
             }
         }
 
+        #endregion
+
+        #region Новое подключение
+
+        static void ErrorConfirmData(TcpClient client, string email, string passworld)//Ошибка проверки данных
+        {
+            client.Client.Send(Encoding.UTF8.GetBytes("0"));
+            WriteLine($"Ошибка при проверки данных у {email}:{passworld}", ConsoleColor.Red);
+        }
+
         private static void CheckNewConnect(object i)//Проверка нового подключения
         {
             WriteLine("Новое подключение!", ConsoleColor.Green);
@@ -287,9 +382,9 @@ namespace Server
 
             Task.Delay(100).Wait();
 
+            //Провека проги
             try
             {
-                //Провека проги
                 if (Encoding.UTF8.GetString(buffer, 0, messi) != "TCPCHAT 1.0")//!!!
                 {
                     WriteLine("Ошибка: Cтарый или другой клиент!", ConsoleColor.Red);
@@ -364,6 +459,46 @@ namespace Server
                     WriteLine($"Новый аккаунт! {email}, {passworld}", ConsoleColor.Green);
                     Data.Settings = set;
                     SettingsManager.Save();
+
+                    //Проверка подтверждения
+                    //1 - есть подтверждение, 0 - нет
+
+                    messi = client.Client.Receive(buffer);
+
+                    answer = Encoding.UTF8.GetString(buffer, 0, messi);
+
+                    if (answer == "1")
+                    {
+                    CheckDataConfirm:
+
+                        //email
+
+                        regex = Regex.Match(answer, "%LOG:(.*):(.*)");//Антон!
+                        string emailCheck = regex.Groups[1].Value;
+
+                        //пароль
+
+                        string passworldCheck = regex.Groups[2].Value;
+
+                        //Проверка
+                        //1 - успешно, 0 - не успешно
+
+                        if (emailCheck != email)
+                        {
+                            ErrorConfirmData(client, email, passworld);
+                            goto CheckDataConfirm;
+                        }
+                        else if (passworldCheck != passworld)
+                        {
+                            ErrorConfirmData(client, email, passworld);
+                            goto CheckDataConfirm;
+                        }
+                        else
+                        {
+                            client.Client.Send(Encoding.UTF8.GetBytes("1"));
+                        }
+                    }
+
                     return;
                 }
             }
@@ -412,7 +547,7 @@ namespace Server
                         //Инцилизация!
 
                         Data.ClientConnectOnly onlyClient = new Data.ClientConnectOnly(client,
-                            Database.GetNickClient(email), email, passworld, Database.GetIdClient(email), 
+                            Database.GetNickClient(email), email, passworld, Database.GetIdClient(email),
                             Data.UserAvatar.Avatar1);
 
                         Data.ClientsOnlyData.Add(onlyClient);
@@ -449,6 +584,10 @@ namespace Server
             }
         }
 
+        #endregion
+
+        #region Дизайн
+
         private static void WriteLine(string text, ConsoleColor color)//Кравивый текст и логи
         {
             Console.ForegroundColor = color;
@@ -456,5 +595,7 @@ namespace Server
             Console.ResetColor();
             sw.WriteLine($"{DateTime.Now}: {text}");
         }
+
+        #endregion
     }
 }
