@@ -18,7 +18,7 @@ namespace Server
 
     public static class SettingsManager
     {
-        public const string FilePath = "Settings.json";
+        const string FilePath = "Settings.json";//Где файл сохранения?
 
         public static void Load()
         {

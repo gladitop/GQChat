@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Data.OleDb;
 
 namespace Server
@@ -12,6 +13,24 @@ namespace Server
         */
 
         public const string ConnectCmd = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=GladiData.MDB;";
+
+        public static void CreateNewDialog(long idClient, long idClient2)//Создание диалога
+        {
+            var setting = (Settings)Data.Settings;
+            OleDbConnection connection = new OleDbConnection(ConnectCmd);
+            connection.Open();
+
+            OleDbCommand command = new OleDbCommand($"CREATE TABLE w_{idClient}_{idClient2} (w_message STRING" +
+                $" w_nick STRING)"
+                , connection);
+
+            setting.MessageInfoChats.Add(new Data.IMessageInfoChat(0, $"w_{idClient}_{idClient2}"));
+            Data.Settings = setting;
+            
+            SettingsManager.Save();
+            command.ExecuteNonQuery();
+            connection.Close();
+        }
 
         public static Data.ClientConnectOffline GetClientInfo(long id)//Получить инфо о клиенте
         {

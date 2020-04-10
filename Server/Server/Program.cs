@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -89,6 +90,10 @@ namespace Server
                 {
                     ShowCountClientTable();
                 }
+                else if (answerCommand.ToLower() == "client l")//Показать всех клиентов из базы данных
+                {
+                    ShowAllClient();
+                }
                 else if (answerCommand.ToLower() == "help")
                 {
                     HelpCommand();
@@ -102,7 +107,23 @@ namespace Server
             }
         }
 
-        #region Команды севрвера
+        #region Команды сервера
+
+        static void ShowAllClient()//Показать всех клиентов
+        {
+            WriteLine("Подождите...", ConsoleColor.Yellow);
+
+            ConsoleTable table = new ConsoleTable("id", "nick", "email", "passworld");
+
+            foreach (Data.ClientConnectOnly clientinfo in Data.ClientsOnlyData)
+            {
+                table.AddRow(1, 2, 3, 4).AddRow(clientinfo.ID, clientinfo.Nick, clientinfo.Email,
+                    clientinfo.Passworld);
+            }
+
+            WriteLine(table.ToString(), ConsoleColor.White);//НЕ РАБОТАЕТ!!!
+            table.Write();
+        }
 
         private static void ShowCountClient()//Показать количество клиентов
         {
@@ -132,9 +153,16 @@ namespace Server
         {
             WriteLine("Подождите...", ConsoleColor.Yellow);
 
-            ConsoleTable table = new ConsoleTable("id", "nick", "email", "passworld");
+            var settings = (Settings)Data.Settings;
+            Data.ClientConnectOffline[] clientsCheck = new Data.ClientConnectOffline[settings.LastId];
+            for (int i = 0; i <= settings.LastId; i++)
+            {
+                clientsCheck[i] = Database.GetClientInfo(i);
+            }
+             
+            ConsoleTable table = new ConsoleTable("id", "nick", "email", "passworld");//TODO: Остальные параметры
 
-            foreach (Data.ClientConnectOnly clientinfo in Data.ClientsOnlyData)
+            foreach (Data.ClientConnectOffline clientinfo in clientsCheck)
             {
                 table.AddRow(1, 2, 3, 4).AddRow(clientinfo.ID, clientinfo.Nick, clientinfo.Email,
                     clientinfo.Passworld);
@@ -195,6 +223,12 @@ namespace Server
                     Data.ClientsOnlyData.Remove(client);
                 }
             }
+        }
+
+        static void MessagesDialog(string text, Data.ClientConnectOnly clientinfo, long chatID)/*Отправка сообщений
+            отдельный чат*/
+        {
+            //TODO
         }
 
         #endregion
@@ -298,18 +332,44 @@ namespace Server
 
                 if (answer.Contains("%MES"))//Для общего чата
                 {
-                    Match regex = Regex.Match(answer, "%MES:(.*)");
-                    string messagesText = regex.Groups[1].Value;
+                    try
+                    {
+                        Match regex = Regex.Match(answer, "%MES:(.*)");
+                        string messagesText = regex.Groups[1].Value;
 
-                    MessagesMain(messagesText, onlyClient);
+                        MessagesMain(messagesText, onlyClient);
+                    }
+                    catch
+                    {
+                        WriteLine($"Ошибка отправки сообщение в общий чат от {onlyClient.ID}", ConsoleColor.Red);
+                        return;
+                    }
                 }
                 else if (answer.Contains("%NCT"))//Новый чат
                 {
+                    //%NCT:idUser
 
+                    try
+                    {
+                        WriteLine($"Выполнения запроса: '%NCT' от: {onlyClient.Nick}, {onlyClient.ID}",
+                                    ConsoleColor.Yellow);
+                        Match regex = Regex.Match(answer, "%NCT:(.*)");
+
+                        Database.CreateNewDialog(onlyClient.ID, long.Parse(regex.Groups[1].Value));
+
+                        onlyClient.ClientSocket.Client.Send(Encoding.UTF8.GetBytes("1"));
+                        WriteLine("Готово!", ConsoleColor.Green);
+                    }
+                    catch
+                    {
+                        WriteLine($"Ошибка при %NCT от {onlyClient.ID}:{onlyClient.Nick}",
+                            ConsoleColor.Red);
+                        return;
+                    }
                 }
                 else if (answer.Contains("%MSE"))//Для отдельного чата (отправка)
                 {
-
+                    //TODO
                 }
                 else if (answer.Contains("%UPM"))//Отправить последнии сообщение (обновление сообщений) TODO
                 {
@@ -333,34 +393,54 @@ namespace Server
                     catch (Exception ex)
                     {
                         WriteLine($"Ошибка: {ex.Message}", ConsoleColor.Red);
+                        return;
                     }
                 }
                 else if (answer.Contains("%EXI"))//Выход (отключение)
                 {
-                    onlyClient.ClientSocket.Close();
-                    Data.ClientsOnlyData.Remove(onlyClient);
-                    return;
+                    try
+                    {
+                        onlyClient.ClientSocket.Close();
+                        Data.ClientsOnlyData.Remove(onlyClient);
+                        WriteLine($"Команда %EXI от {onlyClient.ID}:{onlyClient.Nick}", ConsoleColor.Green);
+                        return;
+                    }
+                    catch 
+                    {
+                        onlyClient.ClientSocket.Close();
+                        Data.ClientsOnlyData.Remove(onlyClient);
+                        WriteLine($"Ошибка клиента при выходе: {onlyClient.ID}:{onlyClient.Nick}", ConsoleColor.Red);
+                        return;
+                    }
                 }
                 else if (answer.Contains("%INF"))//Получить информацию о аккаунте
                 {
-                    int idClient = int.Parse(answer.Substring(5));//%INF:{id}
-
-                    Data.ClientConnectOffline client = Database.GetClientInfo(idClient);
-
-                    //INF:{id}:{name}:{status}:{email}
-
-                    if (client.UserAvatar != Data.UserAvatar.Custom)
+                    try
                     {
-                        bool status = CheckClientOnly(client);
+                        int idClient = int.Parse(answer.Substring(5));//%INF:{id}
 
-                        buffer = Encoding.UTF8.GetBytes($"%INF:{client.ID}:{client.Nick}:{status}:" +
-                            $"{client.Email}");
+                        Data.ClientConnectOffline client = Database.GetClientInfo(idClient);
+
+                        //INF:{id}:{name}:{status}:{email}
+
+                        if (client.UserAvatar != Data.UserAvatar.Custom)
+                        {
+                            bool status = CheckClientOnly(client);
+
+                            buffer = Encoding.UTF8.GetBytes($"%INF:{client.ID}:{client.Nick}:{status}:" +
+                                $"{client.Email}");
+                        }
+                        else
+                        {
+                            Data.ClientConnectOffline offline = Database.GetClientInfo(idClient);//Проверить!
+
+
+                        }
                     }
-                    else
+                    catch
                     {
-                        Data.ClientConnectOffline offline = Database.GetClientInfo(idClient);//Проверить!
-
-
+                        WriteLine($"Ошибка в %INF от {onlyClient.ID}:{onlyClient.Nick}", ConsoleColor.Red);
+                        return;
                     }
                 }
                 else if (answer.Contains("%DEL"))//Удалить аккаунт
@@ -375,23 +455,38 @@ namespace Server
                 }
                 else if (answer.Contains("%UUS"))//Обновление клиентов (только онлайн)
                 {
-                    NetworkStream networkStream = onlyClient.ClientSocket.GetStream();
-                    string stringTemp = $"%UUS:{Data.ClientsOnlyData.Count}:";
-
-                    foreach (Data.ClientConnectOnly client in Data.ClientsOnlyData)
+                    try
                     {
-                        stringTemp += $"{client.Nick};{client.ID}:";
-                    }
-                    Console.WriteLine(stringTemp);
+                        string stringTemp = $"%UUS:{Data.ClientsOnlyData.Count}:";
 
-                    byte[] answerUUS = Encoding.UTF8.GetBytes(stringTemp);
-                    //networkStream.Write(answerUUS, 0, answerUUS.Length);
-                    onlyClient.ClientSocket.Client.Send(answerUUS);
+                        foreach (Data.ClientConnectOnly client in Data.ClientsOnlyData)
+                        {
+                            stringTemp += $"{client.Nick};{client.ID}:";
+                        }
+                        Console.WriteLine(stringTemp);
+
+                        byte[] answerUUS = Encoding.UTF8.GetBytes(stringTemp);
+                        //networkStream.Write(answerUUS, 0, answerUUS.Length);
+                        onlyClient.ClientSocket.Client.Send(answerUUS);
+                    }
+                    catch
+                    {
+                        WriteLine($"Ошибка в %UUS от {onlyClient.ID}:{onlyClient.Nick}", ConsoleColor.Red);
+                        return;
+                    }
                 }
                 else//TODO: Это потом для API!
                 {
-                    //%ERR:CommandIsNot - Такой команды нет
-                    onlyClient.ClientSocket.Client.Send(Encoding.UTF8.GetBytes("%ERR:CommandIsNot"));
+                    try
+                    {
+                        //%ERR:CommandIsNot - Такой команды нет
+                        onlyClient.ClientSocket.Client.Send(Encoding.UTF8.GetBytes("%ERR:CommandIsNot"));
+                    }
+                    catch
+                    {
+                        WriteLine("Ошибка при отправке ОШИБКИ CommandIsNot", ConsoleColor.Red);
+                        return;
+                    }
                 }
             }
         }
