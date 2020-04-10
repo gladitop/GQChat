@@ -66,12 +66,12 @@ namespace Server
 
         public enum UserAvatar// Тип аватарки клиента
         {
-        	Avatar1 = 1,
-        	Avatar2 = 2,
-        	Avatar3 = 3,
-        	Avatar4 = 4,
-        	Avatar5 = 5,
-        	Custom = 6 //Своя загружаная аватарка
+            Avatar1 = 1,
+            Avatar2 = 2,
+            Avatar3 = 3,
+            Avatar4 = 4,
+            Avatar5 = 5,
+            Custom = 6 //Своя загружаная аватарка
         }
     }
 }

@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ConsoleTables;
+using System;
 using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using ConsoleTables;
 
 namespace Server
 {
@@ -18,12 +16,12 @@ namespace Server
         #region Настройки
         private static readonly TcpListener server = new TcpListener(IPAddress.Any, 908);//Порт
         private static readonly StreamWriter sw = new StreamWriter("Log.txt");//Где сохранить логи
-        const int delayCheckClient = 10000;//Сколько ждать при проверки клиентов
-        const string ver = "1.0";//Версия сервера
+        private const int delayCheckClient = 10000;//Сколько ждать при проверки клиентов
+        private const string ver = "1.0";//Версия сервера
         #endregion
 
         #region Переменные
-        static string answerCommand;//Для обработак команд
+        private static string answerCommand;//Для обработак команд
         //static NetworkStream networkStream;
         #endregion
 
@@ -106,12 +104,12 @@ namespace Server
 
         #region Команды севрвера
 
-        static void ShowCountClient()//Показать количество клиентов
+        private static void ShowCountClient()//Показать количество клиентов
         {
             WriteLine($"Всего клиентов в онлайн: {Data.ClientsOnlyData.Count}", ConsoleColor.White);
         }
 
-        static void HelpCommand()//Показывеет все команды (help)
+        private static void HelpCommand()//Показывеет все команды (help)
         {
             WriteLine($"Версия сервера: {ver}\n", ConsoleColor.White);
             WriteLine("%---------Информация о создателей---------%", ConsoleColor.White);
@@ -125,16 +123,16 @@ namespace Server
             WriteLine("client f - инфо о всех клиентов", ConsoleColor.White);
         }
 
-        static void ShowInfoClient(string id)//Информация о клиенте (по id)
+        private static void ShowInfoClient(string id)//Информация о клиенте (по id)
         {
 
         }
 
-        static void ShowCountClientTable()//Показать количество клиентов (в таблице)
+        private static void ShowCountClientTable()//Показать количество клиентов (в таблице)
         {
             WriteLine("Подождите...", ConsoleColor.Yellow);
 
-            var table = new ConsoleTable("id", "nick", "email", "passworld");
+            ConsoleTable table = new ConsoleTable("id", "nick", "email", "passworld");
 
             foreach (Data.ClientConnectOnly clientinfo in Data.ClientsOnlyData)
             {
@@ -161,7 +159,7 @@ namespace Server
             }
         }
 
-        static void OffServer()//Отключение сервера
+        private static void OffServer()//Отключение сервера
         {
             WriteLine("Завершение работы...", ConsoleColor.Yellow);
 
@@ -175,7 +173,7 @@ namespace Server
 
         #region Сообщения
 
-        static void MessagesMain(string text, Data.ClientConnectOnly clientinfo)//Отправка сообщения в общий чат
+        private static void MessagesMain(string text, Data.ClientConnectOnly clientinfo)//Отправка сообщения в общий чат
         {
             WriteLine($"Сообщение в общий чат: {text}", ConsoleColor.Green);
             byte[] buffer = new byte[1024];
@@ -203,7 +201,7 @@ namespace Server
 
         #region Разное
 
-        static bool CheckClientOnly(Data.ClientConnectOffline clientoffline)//проверка клиента на онлайн
+        private static bool CheckClientOnly(Data.ClientConnectOffline clientoffline)//проверка клиента на онлайн
         {
             bool check = false;//Для перебора и это ответ
 
@@ -234,7 +232,7 @@ namespace Server
 
         #region Управление клиентом
 
-        static void CheckConnectClients(object i)//Проверяет всех клиентов на подключение
+        private static void CheckConnectClients(object i)//Проверяет всех клиентов на подключение
         {
             //Загрузка параметров
 
@@ -362,7 +360,7 @@ namespace Server
                     {
                         Data.ClientConnectOffline offline = Database.GetClientInfo(idClient);//Проверить!
 
-                        
+
                     }
                 }
                 else if (answer.Contains("%DEL"))//Удалить аккаунт
@@ -402,7 +400,7 @@ namespace Server
 
         #region Новое подключение
 
-        static void ErrorConfirmData(TcpClient client, string email, string passworld)//Ошибка проверки данных
+        private static void ErrorConfirmData(TcpClient client, string email, string passworld)//Ошибка проверки данных
         {
             client.Client.Send(Encoding.UTF8.GetBytes("0"));
             WriteLine($"Ошибка при проверки данных у {email}:{passworld}", ConsoleColor.Red);

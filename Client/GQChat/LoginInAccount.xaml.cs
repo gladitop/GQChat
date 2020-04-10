@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using GQChat.Other.Class;
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Threading;
-using GQChat.Other.Pages;
-using GQChat.Other.Class;
 
 namespace GQChat
 {
@@ -22,13 +11,15 @@ namespace GQChat
     /// </summary>
     public partial class LoginInAccount : Window
     {
-        Thread thread;
+        private readonly Thread thread;
 
         public LoginInAccount()
         {
             InitializeComponent();
-            thread = new Thread(new ThreadStart(Update));
-            thread.IsBackground = true;
+            thread = new Thread(new ThreadStart(Update))
+            {
+                IsBackground = true
+            };
             thread.Start();
         }
 
@@ -38,7 +29,7 @@ namespace GQChat
             {
                 Task.Delay(50).Wait();
 
-                this.Dispatcher.Invoke(new Action(() =>
+                Dispatcher.Invoke(new Action(() =>
                 {
                     if (Data.NewPages)
                     {

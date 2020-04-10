@@ -9,8 +9,17 @@
     <Grid>
         <ListBox HorizontalAlignment="Left" Margin="0,55,0,0" Width="192"/>
         <Grid Height="55" VerticalAlignment="Top" Background="#FF1794CF"/>
-        <ListBox Margin="192,55,0,105"/>
-        <TextBox FontSize="25" TextWrapping="Wrap" Text="" AcceptsReturn="True" Margin="192,0,0,0" Height="105" VerticalAlignment="Bottom"/>
+        <ListBox x:Name="listMessages" Margin="192,55,0,105">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Nick}" FontSize="20" FontWeight="Black"></TextBlock>
+                        <TextBlock Text="{Binding Text}" FontSize="10" FontWeight="ExtraLight"></TextBlock>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+            <TextBox FontSize="25" TextWrapping="Wrap" Text="" AcceptsReturn="True" Margin="192,0,0,0" Height="105" VerticalAlignment="Bottom"/>
 
     </Grid>
 </Window>

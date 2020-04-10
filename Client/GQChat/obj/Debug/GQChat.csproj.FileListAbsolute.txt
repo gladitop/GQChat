@@ -18,7 +18,6 @@ C:\Users\damal\source\repos\GQChat\GQChat\obj\Debug\LoginInAccount.baml
 C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\bin\Debug\GQChat.exe.config
 C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\bin\Debug\GQChat.exe
 C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\bin\Debug\GQChat.pdb
-C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\obj\Debug\GQChat.csprojAssemblyReference.cache
 C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\obj\Debug\LoginInAccount.g.cs
 C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\obj\Debug\MainWindow.g.cs
 C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\obj\Debug\Other\Pages\LoginAccount.g.cs

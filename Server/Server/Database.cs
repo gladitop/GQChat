@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data.OleDb;
-using System.Security.AccessControl;
 
 namespace Server
 {
@@ -75,7 +74,7 @@ namespace Server
 
         public static long GetMessageCountLast(long messCount)//Получить последние id сообщения в общем чате
         {
-            var settings = (Settings)Data.Settings;
+            Settings settings = (Settings)Data.Settings;
 
             return settings.LastIdMessMain;
         }

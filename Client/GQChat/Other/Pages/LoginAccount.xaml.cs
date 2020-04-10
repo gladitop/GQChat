@@ -1,22 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GQChat.Other.Class;
+using System.Net.Sockets;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Net;
-using System.Net.Sockets;
-using GQChat.Other.Class;
-using GQChat.Other.Pages;
-using System.Text.RegularExpressions;
 
 namespace GQChat.Other.Pages
 {
@@ -50,6 +35,7 @@ namespace GQChat.Other.Pages
             }
             else
             {
+                /*
                 using (TcpClient client = new TcpClient(Data.IpServer, Data.PortServer))
                 {
                     byte[] buffer = new byte[1024];
@@ -68,6 +54,10 @@ namespace GQChat.Other.Pages
                         Data.LoginSucces = true;
                     }//TODO Сделать проверку ошибок!
                 }
+                */
+
+                Data.TcpClient = new TcpClient();
+                Data.LoginSucces = true;
             }
         }
 
