@@ -75,7 +75,7 @@ patent rights.
 | `%DEL`         | Удалить аккаунт                 | `%DEL`                             |
 | `%SЕM`         | Отправить файл в об. чат        | `%SEM:textMess:fileName`           |
 | `%SMM`         | Отправить файл в от. чат        | `%SEM:textMess:fileName:idChat`    |
-| `%UUS`         | Обновление клиентов (онлайн)    | `%UUS:countMessages`               |
+| `%UUS`         | Обновление клиентов (онлайн)    | `%UUS`                             |
 
 # Авторы
 
