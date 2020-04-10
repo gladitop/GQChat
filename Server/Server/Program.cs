@@ -51,6 +51,20 @@ namespace Server
             thread = new Thread(new ParameterizedThreadStart(CheckConnectClients));
             thread.Start(delayCheckClient);
 
+            WriteLine("Создание папок...", ConsoleColor.Yellow);
+
+            if (!Directory.Exists("Avatars"))
+            {
+                Directory.CreateDirectory("Avatars");
+                WriteLine("Создана папка Avatars", ConsoleColor.Green);
+            }
+
+            if (!Directory.Exists("Files"))
+            {
+                Directory.CreateDirectory("Files");
+                WriteLine("Создана папка Files", ConsoleColor.Green);
+            }
+
             WriteLine("Сервер запущен!", ConsoleColor.Green);
 
             //Команды
@@ -113,7 +127,7 @@ namespace Server
 
         static void ShowInfoClient(string id)//Информация о клиенте (по id)
         {
-            
+
         }
 
         static void ShowCountClientTable()//Показать количество клиентов (в таблице)
@@ -161,30 +175,59 @@ namespace Server
 
         #region Сообщения
 
-        private static void UpdateMessages(string text, Data.ClientConnectOnly onlyClient)//Для общего чата
+        static void MessagesMain(string text, Data.ClientConnectOnly clientinfo)//Отправка сообщения в общий чат
         {
-            try
+            WriteLine($"Сообщение в общий чат: {text}", ConsoleColor.Green);
+            byte[] buffer = new byte[1024];
+
+            //%MME - Получение сообщение в общий чат
+
+            buffer = Encoding.UTF8.GetBytes($"%MME:{text}:{clientinfo.Nick}:{clientinfo.ID}");
+
+            foreach (Data.ClientConnectOnly client in Data.ClientsOnlyData)
             {
-                WriteLine($"Cообщение в общий чат: {onlyClient.Nick}:{text}", ConsoleColor.Green);
-                WriteLine("Отправка сообщениие в этот чат...", ConsoleColor.Yellow);
-
-                byte[] answer = new byte[1024];
-                answer = Encoding.UTF8.GetBytes(text);
-
-                foreach (Data.ClientConnectOnly client in Data.ClientsOnlyData)
+                try
                 {
-                    client.ClientSocket.Client.Send(answer);
+                    client.ClientSocket.Client.Send(buffer);
                 }
+                catch
+                {
+                    WriteLine($"Ошибка клиента: {client.Nick}, {client.Email}", ConsoleColor.Red);
+                    client.ClientSocket.Close();
+                    Data.ClientsOnlyData.Remove(client);
+                }
+            }
+        }
 
-                WriteLine($"Сообщение '{text}', отправлено!", ConsoleColor.Green);
-            }
-            catch (Exception ex)
+        #endregion
+
+        #region Разное
+
+        static bool CheckClientOnly(Data.ClientConnectOffline clientoffline)//проверка клиента на онлайн
+        {
+            bool check = false;//Для перебора и это ответ
+
+            foreach (Data.ClientConnectOnly clientonly in Data.ClientsOnlyData)
             {
-                WriteLine($"Ошибка в общем чате: {ex.Message}", ConsoleColor.Red);
-                WriteLine($"Клиент: {onlyClient.Nick} {onlyClient.Email}", ConsoleColor.Green);
-                onlyClient.ClientSocket.Close();
-                Data.ClientsOnlyData.Remove(onlyClient);
+                if (clientoffline.ID == clientoffline.ID)
+                {
+                    check = true;
+                }
             }
+
+            if (check)
+            {
+                WriteLine($"Проверку на онлайн выполнил на (и нашёл) {clientoffline.ID}",
+    ConsoleColor.Green);
+            }
+            else
+            {
+                WriteLine($"Проверку на онлайн выполнил на (и НЕ нашёл) {clientoffline.ID}",
+    ConsoleColor.Green);
+
+            }
+
+            return check;
         }
 
         #endregion
@@ -230,30 +273,6 @@ namespace Server
             }
         }
 
-        static void MessagesMain(string text)//Отправка сообщения в общий чат
-        {
-            WriteLine($"Сообщение в общий чат: {text}", ConsoleColor.Green);
-            byte[] buffer = new byte[1024];
-
-            //%MME - Получение сообщение в общий чат
-
-            buffer = Encoding.UTF8.GetBytes($"%MME:{text}");
-
-            foreach (Data.ClientConnectOnly client in Data.ClientsOnlyData)
-            {
-                try
-                {
-                    client.ClientSocket.Client.Send(buffer);
-                }
-                catch
-                {
-                    WriteLine($"Ошибка клиента: {client.Nick}, {client.Email}", ConsoleColor.Red);
-                    client.ClientSocket.Close();
-                    Data.ClientsOnlyData.Remove(client);
-                }
-            }
-        }
-
         private static void MessagesClient(object i)//Команды от клиента
         {
             Data.ClientConnectOnly onlyClient = (Data.ClientConnectOnly)i;
@@ -284,7 +303,7 @@ namespace Server
                     Match regex = Regex.Match(answer, "%MES:(.*)");
                     string messagesText = regex.Groups[1].Value;
 
-                    MessagesMain(messagesText);
+                    MessagesMain(messagesText, onlyClient);
                 }
                 else if (answer.Contains("%NCT"))//Новый чат
                 {
@@ -326,20 +345,24 @@ namespace Server
                 }
                 else if (answer.Contains("%INF"))//Получить информацию о аккаунте
                 {
-                    int idClient = int.Parse(answer.Substring(5));//%INF:{}
+                    int idClient = int.Parse(answer.Substring(5));//%INF:{id}
 
                     Data.ClientConnectOffline client = Database.GetClientInfo(idClient);
 
-                    //%INF:{email}:{id}:{nick}:{avatar}
+                    //INF:{id}:{name}:{status}:{email}
 
                     if (client.UserAvatar != Data.UserAvatar.Custom)
                     {
-                        buffer = Encoding.UTF8.GetBytes($"%INF:{client.Email}:{client.ID}:{client.Nick}:" +
-                            $"{client.UserAvatar}");
+                        bool status = CheckClientOnly(client);
+
+                        buffer = Encoding.UTF8.GetBytes($"%INF:{client.ID}:{client.Nick}:{status}:" +
+                            $"{client.Email}");
                     }
                     else
                     {
-                        //TODO
+                        Data.ClientConnectOffline offline = Database.GetClientInfo(idClient);//Проверить!
+
+                        
                     }
                 }
                 else if (answer.Contains("%DEL"))//Удалить аккаунт
@@ -364,14 +387,13 @@ namespace Server
                     Console.WriteLine(stringTemp);
 
                     byte[] answerUUS = Encoding.UTF8.GetBytes(stringTemp);
-                    networkStream.Write(answerUUS, 0, answerUUS.Length);
+                    //networkStream.Write(answerUUS, 0, answerUUS.Length);
+                    onlyClient.ClientSocket.Client.Send(answerUUS);
                 }
                 else//TODO: Это потом для API!
                 {
-                    //Обработак ошибок
-                    //Просто отправить что команды не известна
-                    //Да я ОЧЕНЬ ленивый программист
-                    //Gladi (384 до н. э.)
+                    //%ERR:CommandIsNot - Такой команды нет
+                    onlyClient.ClientSocket.Client.Send(Encoding.UTF8.GetBytes("%ERR:CommandIsNot"));
                 }
             }
         }
