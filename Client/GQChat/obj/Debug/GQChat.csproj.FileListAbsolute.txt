@@ -35,3 +35,7 @@ C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\obj\Debug\GQChat.exe
 C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\obj\Debug\GQChat.pdb
 C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\obj\Debug\Other\Pages\RegAccount.g.cs
 C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\obj\Debug\Other\Pages\RegAccount.baml
+C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\obj\Debug\GQChat.csprojAssemblyReference.cache
+C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\bin\Debug\Newtonsoft.Json.dll
+C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\bin\Debug\Newtonsoft.Json.xml
+C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\obj\Debug\GQChat.csproj.CopyComplete

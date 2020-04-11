@@ -13,8 +13,11 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Nick}" FontSize="20" FontWeight="Black"></TextBlock>
-                        <TextBlock Text="{Binding Text}" FontSize="10" FontWeight="ExtraLight"></TextBlock>
+                        <!--<Image Source="{Binding Avatar}"></Image>-->
+                        <TextBlock Text="{Binding Nick}" FontSize="20" HorizontalAlignment="Right" FontWeight="Black"></TextBlock>
+                        <Grid HorizontalAlignment="Right">
+                            <TextBlock Text="{Binding Text}" FontSize="10" FontWeight="ExtraLight"></TextBlock>
+                        </Grid>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>

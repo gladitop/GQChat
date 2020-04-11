@@ -16,11 +16,14 @@ namespace GQChat
         public LoginInAccount()
         {
             InitializeComponent();
+
             thread = new Thread(new ThreadStart(Update))
             {
                 IsBackground = true
             };
             thread.Start();
+
+            SettingsManager.Load();
         }
 
         public void Update()

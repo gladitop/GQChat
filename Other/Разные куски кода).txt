@@ -1,0 +1,4 @@
+<ListBox Width="400" Margin="10"
+     ItemsSource="{Binding Source={StaticResource myTodoList}}"
+     ItemTemplate="{StaticResource myTaskTemplate}" 
+     HorizontalContentAlignment="Stretch"/>

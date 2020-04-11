@@ -9,6 +9,7 @@ namespace GQChat.Other.Class
 
         public const string IpServer = "127.0.0.1";//Ip сервера
         public const int PortServer = 908;//порт сервера
+        public const string SavePath = "Settings.json";//Вот тут будет сохраняться
 
         public class MessageListBox//Для показа сообщений в listbox
         {
@@ -29,5 +30,6 @@ namespace GQChat.Other.Class
         public static string NameTitle { get; set; } = "GQChat: Вход";
         public static TcpClient TcpClient { get; set; }//Сокет!
         public static bool LoginSucces { get; set; }//Вход выполнен?
+        public static object Settings { get; set; }//Настройки
     }
 }
