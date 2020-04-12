@@ -1,4 +1,20 @@
-<ListBox Width="400" Margin="10"
-     ItemsSource="{Binding Source={StaticResource myTodoList}}"
-     ItemTemplate="{StaticResource myTaskTemplate}" 
-     HorizontalContentAlignment="Stretch"/>
+Для красивого listbox
+
+<ListBox Name="Photos" Background="Lavender">
+    <ListBoxItem Margin="3">
+        <StackPanel Orientation="Horizontal">
+            <Image Source="cats.jpg" Width="60" />
+            <TextBlock>cats.jpg</TextBlock>
+        </StackPanel>
+    </ListBoxItem>
+    <StackPanel Orientation="Horizontal">
+        <Image Source="windowcat.jpg" Width="60" />
+        <TextBlock>windowcat.jpg</TextBlock>
+    </StackPanel>
+    <StackPanel Orientation="Horizontal">
+        <Image Source="234.jpg" Width="60" />
+        <TextBlock>234.jpg</TextBlock>
+    </StackPanel>
+</ListBox>
+
+Ссылка - https://metanit.com/sharp/wpf/5.7.php

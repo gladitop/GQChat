@@ -115,13 +115,15 @@ namespace Server
 
             ConsoleTable table = new ConsoleTable("id", "nick", "email", "passworld");
 
-            foreach (Data.ClientConnectOnly clientinfo in Data.ClientsOnlyData)
+            foreach (Data.ClientConnectOnly clientinfo in Data.ClientsOnlyData)//Проблема!
             {
-                table.AddRow(1, 2, 3, 4).AddRow(clientinfo.ID, clientinfo.Nick, clientinfo.Email,
-                    clientinfo.Passworld);
+                table.AddRow(1, 2, 3, 4).AddRow(clientinfo.ID, clientinfo.Nick.ToString(),
+                    clientinfo.Email.ToString(),
+                    clientinfo.Passworld.ToString());
             }
+            table.AddRow(1, 2, 3, 4).AddRow("1", "Gladi", "gladi@gmail.com",
+                    "АнтонЗлой!");
 
-            WriteLine(table.ToString(), ConsoleColor.White);//НЕ РАБОТАЕТ!!!
             table.Write();
         }
 
@@ -168,7 +170,7 @@ namespace Server
                     clientinfo.Passworld);
             }
 
-            WriteLine(table.ToString(), ConsoleColor.White);
+            table.Write();
         }
 
         private static void DisconnectClients()//Отключение всех клиентов
@@ -405,7 +407,7 @@ namespace Server
                         WriteLine($"Команда %EXI от {onlyClient.ID}:{onlyClient.Nick}", ConsoleColor.Green);
                         return;
                     }
-                    catch 
+                    catch
                     {
                         onlyClient.ClientSocket.Close();
                         Data.ClientsOnlyData.Remove(onlyClient);
@@ -474,6 +476,42 @@ namespace Server
                         WriteLine($"Ошибка в %UUS от {onlyClient.ID}:{onlyClient.Nick}", ConsoleColor.Red);
                         return;
                     }
+                }
+                else if (answer.Contains("%UAT"))//Загрузка (обновление) аватарки клиента
+                {
+                    WriteLine($"Получение аватарки от {onlyClient.ID}:{onlyClient.Nick}...",
+                        ConsoleColor.Yellow);
+
+                    //%UAT:typeAvatar:sizeFile
+                    Match regex = Regex.Match(answer, "%UAT:(.*):(.*)");
+                    Data.UserAvatar userAvatar = (Data.UserAvatar)short.Parse(regex.Groups[1].Value);
+
+                    if (File.Exists($@"Avatars\{onlyClient.ID}.png"))
+                        File.Delete($@"Avatars\{onlyClient.ID}.png");
+
+                    if (userAvatar == Data.UserAvatar.Custom)
+                    { 
+                        /*Инфа о файле
+                        (Максимальный размер 8 мб)*/
+
+                        int sizeFile = int.Parse(regex.Groups[2].Value);
+
+                        //ДЛЯ ПОЛУЧЕНИЕ ФАЙЛОВ ПОРТ 909!!!
+                        UdpClient udpClient = new UdpClient(909, AddressFamily.InterNetwork);
+                        IPEndPoint end = (IPEndPoint)onlyClient.ClientSocket.Client.RemoteEndPoint;
+
+                        //Загрузка файла
+                        byte[] bufferFile = udpClient.Receive(ref end);
+                        File.WriteAllBytes($@"Avatars\{onlyClient.ID}.png", bufferFile);
+                        //TODO: Добавить в базу данных!
+                    }
+                    else
+                    {
+                        //TODO:Просто добавить в базу данных!
+                    }
+
+                    WriteLine($"Полученена аватарка от {onlyClient.ID}:{onlyClient.Nick}...",
+    ConsoleColor.Yellow);
                 }
                 else//TODO: Это потом для API!
                 {

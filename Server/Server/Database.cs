@@ -224,7 +224,7 @@ namespace Server
                 connection.Open();
 
                 OleDbCommand command = new OleDbCommand($"INSERT INTO w_accounts (w_id, w_email, w_passworld, w_nick)" +
-                    $" VALUES ({id}, '{email}', '{passworld}', '{nick}')", connection);
+                    $" VALUES ({id}, '{email}', '{passworld}', '{nick}')", connection);//Новые параметры!
 
                 command.ExecuteNonQuery();
                 connection.Close();
