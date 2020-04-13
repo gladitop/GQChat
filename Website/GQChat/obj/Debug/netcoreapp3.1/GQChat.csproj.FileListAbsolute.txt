@@ -109,8 +109,6 @@ C:\Users\damal\Documents\GitHub\GQChat\Website\GQChat\bin\Debug\netcoreapp3.1\ru
 C:\Users\damal\Documents\GitHub\GQChat\Website\GQChat\bin\Debug\netcoreapp3.1\tr\Microsoft.CodeAnalysis.Workspaces.resources.dll
 C:\Users\damal\Documents\GitHub\GQChat\Website\GQChat\bin\Debug\netcoreapp3.1\zh-Hans\Microsoft.CodeAnalysis.Workspaces.resources.dll
 C:\Users\damal\Documents\GitHub\GQChat\Website\GQChat\bin\Debug\netcoreapp3.1\zh-Hant\Microsoft.CodeAnalysis.Workspaces.resources.dll
-C:\Users\damal\Documents\GitHub\GQChat\Website\GQChat\obj\Debug\netcoreapp3.1\GQChat.csproj.CoreCompileInputs.cache
-C:\Users\damal\Documents\GitHub\GQChat\Website\GQChat\obj\Debug\netcoreapp3.1\GQChat.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\damal\Documents\GitHub\GQChat\Website\GQChat\obj\Debug\netcoreapp3.1\GQChat.csproj.CopyComplete
 C:\Users\damal\Documents\GitHub\GQChat\Website\GQChat\bin\Debug\netcoreapp3.1\GQChat.Views.dll
 C:\Users\damal\Documents\GitHub\GQChat\Website\GQChat\bin\Debug\netcoreapp3.1\GQChat.Views.pdb
@@ -122,3 +120,7 @@ C:\Users\damal\Documents\GitHub\GQChat\Website\GQChat\obj\Debug\netcoreapp3.1\GQ
 C:\Users\damal\Documents\GitHub\GQChat\Website\GQChat\obj\Debug\netcoreapp3.1\Razor\Pages\Index.cshtml.g.cs
 C:\Users\damal\Documents\GitHub\GQChat\Website\GQChat\obj\Debug\netcoreapp3.1\GQChat.RazorTargetAssemblyInfo.cs
 C:\Users\damal\Documents\GitHub\GQChat\Website\GQChat\obj\Debug\netcoreapp3.1\GQChat.Views.pdb
+C:\Users\damal\Documents\GitHub\GQChat\Website\GQChat\bin\Debug\netcoreapp3.1\Microsoft.DotNet.PlatformAbstractions.dll
+C:\Users\damal\Documents\GitHub\GQChat\Website\GQChat\bin\Debug\netcoreapp3.1\Microsoft.Extensions.DependencyModel.dll
+C:\Users\damal\Documents\GitHub\GQChat\Website\GQChat\obj\Debug\netcoreapp3.1\GQChat.csproj.CoreCompileInputs.cache
+C:\Users\damal\Documents\GitHub\GQChat\Website\GQChat\obj\Debug\netcoreapp3.1\GQChat.MvcApplicationPartsAssemblyInfo.cache
