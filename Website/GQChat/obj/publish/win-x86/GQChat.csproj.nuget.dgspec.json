@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\damal\\source\\repos\\GQChat\\GQChat\\GQChat.csproj": {}
+    "C:\\Users\\damal\\Documents\\GitHub\\GQChat\\Website\\GQChat\\GQChat.csproj": {}
   },
   "projects": {
-    "C:\\Users\\damal\\source\\repos\\GQChat\\GQChat\\GQChat.csproj": {
+    "C:\\Users\\damal\\Documents\\GitHub\\GQChat\\Website\\GQChat\\GQChat.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\damal\\source\\repos\\GQChat\\GQChat\\GQChat.csproj",
+        "projectUniqueName": "C:\\Users\\damal\\Documents\\GitHub\\GQChat\\Website\\GQChat\\GQChat.csproj",
         "projectName": "GQChat",
-        "projectPath": "C:\\Users\\damal\\source\\repos\\GQChat\\GQChat\\GQChat.csproj",
+        "projectPath": "C:\\Users\\damal\\Documents\\GitHub\\GQChat\\Website\\GQChat\\GQChat.csproj",
         "packagesPath": "C:\\Users\\damal\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\damal\\source\\repos\\GQChat\\GQChat\\obj\\publish\\win-x86\\",
+        "outputPath": "C:\\Users\\damal\\Documents\\GitHub\\GQChat\\Website\\GQChat\\obj\\publish\\win-x86\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Microsoft\\Xamarin\\NuGet\\"
@@ -45,6 +45,10 @@
             "Microsoft.AspNetCore.StaticFiles": {
               "target": "Package",
               "version": "[2.2.0, )"
+            },
+            "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
+              "target": "Package",
+              "version": "[3.1.1, )"
             }
           },
           "imports": [

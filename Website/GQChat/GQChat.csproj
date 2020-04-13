@@ -11,7 +11,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="wwwroot\Pages\Index.cshtml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\Images\android-chrome-192x192.png" />
+    <None Include="wwwroot\Images\android-chrome-512x512.png" />
+    <None Include="wwwroot\Images\apple-touch-icon.png" />
+    <None Include="wwwroot\Images\browserconfig.xml" />
+    <None Include="wwwroot\Images\favicon-16x16.png" />
+    <None Include="wwwroot\Images\favicon-32x32.png" />
+    <None Include="wwwroot\Images\favicon.ico" />
+    <None Include="wwwroot\Images\mstile-150x150.png" />
+    <None Include="wwwroot\Images\site.webmanifest" />
   </ItemGroup>
 
 </Project>
