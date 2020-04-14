@@ -13,5 +13,10 @@ namespace GQChat.Pages
         {
             
         }
+
+        public void download()
+        {
+            Console.Beep();
+        }
     }
 }
