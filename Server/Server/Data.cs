@@ -15,7 +15,7 @@ namespace Server
         public class ClientConnectOnly//инфа о клиенте (онлайн) (ТОЛЬКО ДЛЯ СЕРВЕРА)
         {
             public ClientConnectOnly(TcpClient tcpClient, string nick, string email,
-                string passworld, long id, UserAvatar userAvatar)
+                string passworld, long id, UserAvatar userAvatar, bool offical)
             {
                 ClientSocket = tcpClient;
                 Nick = nick;
@@ -23,6 +23,7 @@ namespace Server
                 Passworld = passworld;
                 ID = id;
                 UserAvatar = userAvatar;
+                Offical = offical;
             }
 
             public TcpClient ClientSocket { get; set; }//Сокет
@@ -31,6 +32,7 @@ namespace Server
             public string Passworld { get; set; }//Пароль
             public long ID { get; set; }//ID клиента
             public UserAvatar UserAvatar { get; set; }//Аватар клиента
+            public bool Offical { get; set; }//Аккаунт официальный?
         }
 
         public class ClientConnectOffline//инфа о клиенте (офлайн) (ТОЛЬКО ДЛЯ СЕРВЕРА)

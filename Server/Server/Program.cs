@@ -589,11 +589,8 @@ namespace Server
             {
                 //email
 
-                Match regex = Regex.Match(answer, "%REG:(.*):(.*):(.*)");//Антон!
+                Match regex = Regex.Match(answer, "%REG:(.*):(.*):(.*):(.*)");//Антон!
                 string email = regex.Groups[1].Value;
-                Console.WriteLine(@"%REG:(.*):(.*):(.*)");
-                Console.WriteLine(answer);
-                Console.WriteLine(email);
 
                 //string email = answer.
                 //TODO: Сделать проверку email через подтверждение (Нужен smtp сервер)
@@ -607,6 +604,10 @@ namespace Server
 
                 string nick = regex.Groups[3].Value;
                 Console.WriteLine(nick);
+
+                //Аватарка
+
+                int avatar = int.Parse(regex.Groups[4].Value);
 
                 //Проверка
 
@@ -624,7 +625,7 @@ namespace Server
                     Console.WriteLine("1");
                     Settings set = (Settings)Data.Settings;
                     set.LastId = Database.GetLastIdAccount() + 1;
-                    Database.AccountAdd(email, passworld, nick, set.LastId);
+                    Database.AccountAdd(email, passworld, nick, set.LastId, avatar, false);
                     client.Client.Send(Encoding.UTF8.GetBytes("%REGOD"));
 
                     WriteLine($"Новый аккаунт! {email}, {passworld}", ConsoleColor.Green);
@@ -632,7 +633,7 @@ namespace Server
                     SettingsManager.Save();
 
                     //Проверка подтверждения
-                    //1 - есть подтверждение, 0 - нет
+                    //1 - есть подтверждение, 0 - нет (Но злой Антон всё переделал :) )
 
                     messi = client.Client.Receive(buffer);
 
@@ -719,7 +720,7 @@ namespace Server
 
                         Data.ClientConnectOnly onlyClient = new Data.ClientConnectOnly(client,
                             Database.GetNickClient(email), email, passworld, Database.GetIdClient(email),
-                            Data.UserAvatar.Avatar1);
+                            Data.UserAvatar.Avatar1, false);//TODO
 
                         Data.ClientsOnlyData.Add(onlyClient);
 

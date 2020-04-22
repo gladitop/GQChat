@@ -1,0 +1,15 @@
+﻿<Window x:Class="GQChat.Other.Windows.Update"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GQChat.Other.Windows"
+        mc:Ignorable="d"
+        Title="GQChat: Обновление" Height="348.635" Icon="/Resources/UpdateIco.ico" ResizeMode="NoResize" Width="263.993">
+    <Grid>
+        <Image HorizontalAlignment="Left" Source="/Resources/UpdateMin.png" Height="148" Margin="47,10,0,0" VerticalAlignment="Top" Width="179"/>
+        <ProgressBar x:Name="progress" HorizontalAlignment="Left" Height="32" Margin="0,220,0,0" VerticalAlignment="Top" Width="258"/>
+        <Button x:Name="btCheck" Content="Обновление" FontSize="30" HorizontalAlignment="Left" Margin="47,265,0,0" VerticalAlignment="Top" Width="179" Height="47" Click="btCheck_Click"/>
+
+    </Grid>
+</Window>

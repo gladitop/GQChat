@@ -8,7 +8,12 @@
         Title="GQChat: Главное меню" MinHeight="450" MinWidth="800" Height="450" Width="800" Closing="Window_Closing">
     <Grid>
         <ListBox HorizontalAlignment="Left" Margin="0,55,0,0" Width="192"/>
-        <Grid Height="55" VerticalAlignment="Top" Background="#FF1794CF"/>
+        <Grid Height="55" VerticalAlignment="Top" Background="#FF1794CF">
+            <!--Обновление-->
+            
+            <Image HorizontalAlignment="Left" Source="Resources/UpdateMin.png" Height="55" Margin="733,0,0,0" VerticalAlignment="Top" Width="59"/>
+            <Button x:Name="btUpdate" HorizontalAlignment="Left" ToolTip="Обновление" Opacity="0" Height="55" Margin="733,0,0,0" VerticalAlignment="Top" Width="59" Click="btUpdate_Click"/>
+        </Grid>
         <ListBox x:Name="listMessages" Margin="192,55,0,105">
             <ListBox.ItemTemplate>
                 <DataTemplate>
@@ -22,7 +27,7 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-            <TextBox FontSize="25" TextWrapping="Wrap" Text="" AcceptsReturn="True" Margin="192,0,0,0" Height="105" VerticalAlignment="Bottom"/>
+        <TextBox FontSize="25" TextWrapping="Wrap" Text="" AcceptsReturn="True" Margin="192,0,0,0" Height="105" VerticalAlignment="Bottom"/>
 
     </Grid>
 </Window>

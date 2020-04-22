@@ -50,7 +50,7 @@
 
 # Лицензия
 
-***GUI***
+***GPL-3.0***
 ```
 Permissions of this strong copyleft license are conditioned
 on making available complete source code of licensed works

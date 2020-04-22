@@ -216,15 +216,16 @@ namespace Server
             return set.LastId;
         }
 
-        public static void AccountAdd(string email, string passworld, string nick, long id)//Добавить в аккаунт ERROR
+        public static void AccountAdd(string email, string passworld, string nick, long id, int avatar, bool offical)//Добавить в аккаунт ERROR
         {
             try
             {
                 OleDbConnection connection = new OleDbConnection(ConnectCmd);
                 connection.Open();
 
-                OleDbCommand command = new OleDbCommand($"INSERT INTO w_accounts (w_id, w_email, w_passworld, w_nick)" +
-                    $" VALUES ({id}, '{email}', '{passworld}', '{nick}')", connection);//Новые параметры!
+                OleDbCommand command = new OleDbCommand($"INSERT INTO w_accounts (w_id, w_email, w_passworld, w_nick, w_avatar, w_offical)" +
+                    $" VALUES ({id}, '{email}', '{passworld}', '{nick}', {avatar}, {offical})", connection);//Новые параметры!
+                //-1 это true, а 0 это false
 
                 command.ExecuteNonQuery();
                 connection.Close();

@@ -1,6 +1,7 @@
 ﻿using GQChat.Other.Class;
 using System;
 using System.Windows;
+using GQChat.Other.Windows;
 
 namespace GQChat
 {
@@ -24,6 +25,12 @@ namespace GQChat
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Environment.Exit(0);
+        }
+
+        private void btUpdate_Click(object sender, RoutedEventArgs e)//Обновление
+        {
+            Update update = new Update();
+            update.ShowDialog();
         }
     }
 }

@@ -8,30 +8,33 @@ using System.IO;
 
 namespace GQChat.Other.Class
 {
-    public class Settings
+    public class Settings//Вот тут настройки
     {
-        [JsonProperty("passworld")]
+        [JsonProperty("passworld")]//Пароль
         public string Passworld { get; set; }
 
-        [JsonProperty("email")]
+        [JsonProperty("email")]//Почта
         public string Email { get; set; }
 
-        [JsonProperty("nick")]
+        [JsonProperty("nick")]//Ник
         public string Nick { get; set; }
 
-        [JsonProperty("id")]
+        [JsonProperty("id")]//Id
         public long ID { get; set; }
 
-        [JsonProperty("officlial")]
+        [JsonProperty("officlial")]//Аккаунт официальный
         public bool Officlial { get; set; }
 
-        [JsonProperty("customAvatar")]
+        [JsonProperty("customAvatar")]//Есть аватарка для аккаунта?
         public bool CustomAvatar { get; set; }
+
+        [JsonProperty("")]//При закрытие программы она будет работать в фоновом режиме
+        public bool CloseProgram { get; set; }
     }
 
-    static public class SettingsManager
+    static public class SettingsManager//Управление настройками
     {
-        static public Settings Load()
+        static public Settings Load()//Загрузка
         {
             if (!File.Exists(Data.SavePath))
             {
@@ -56,7 +59,7 @@ namespace GQChat.Other.Class
             }
         }
 
-        static public void Save(Settings settings)
+        static public void Save(Settings settings)//Сохранение
         {
             File.WriteAllText(Data.SavePath, JsonConvert.SerializeObject(settings));
         }
