@@ -5,7 +5,7 @@
             Y8.   .88 Y8.  Y88P  Y8.   .88 88    88 88.  .88   88   
              `88888'   `8888PY8b  Y88888P' dP    dP `88888P8   dP
 
-`GQChat`
+`GQChat` ver 1.0
 
 # Ссылки
 
@@ -38,6 +38,8 @@
 | `SharpCompress`           | Это библиотека для RAR| [![sharpcompress](https://img.shields.io/nuget/vpre/sharpcompress.svg)](https://www.nuget.org/packages/sharpcompress) |
 | `Newtonsoft.Json`         | Сохранения! | [![Newtonsoft.Json](https://img.shields.io/nuget/vpre/Newtonsoft.Json.svg)](https://www.nuget.org/packages/Newtonsoft.Json) |
 | `ConsoleTables`         | Таблицы! | [![ConsoleTables](https://img.shields.io/nuget/vpre/ConsoleTables.svg)](https://www.nuget.org/packages/ConsoleTables) |
+| `Emoji.Wpf`         | Смайлики! | [![Emoji.Wpf](https://img.shields.io/nuget/vpre/Emoji.Wpf.svg)](https://www.nuget.org/packages/Emoji.Wpf) |
+| `LiveCharts.Wpf`         | Графики | [![LiveCharts.Wpf](https://img.shields.io/nuget/vpre/LiveCharts.Wpf.svg)](https://www.nuget.org/packages/LiveCharts.Wpf/) |
 
 # Папки
 
@@ -47,6 +49,8 @@
 | `Server`       | Сервер для чата         |
 | `ClientUnity`  | Клиент для чата (Unity) |
 | `Other`        | Разное                  |
+| `.github`      | Настройки для github    |
+| `Website`      | Сайт программы          |
 
 # Лицензия
 
@@ -62,20 +66,20 @@ patent rights.
 
 # Команды сервера
 
-| Название       | Описание	    		           | Пример                             |
-|----------------|---------------------------------|------------------------------------|
-| `%REG`         | Служит для регистрации          | `%REG:email:password:nick`         |
-| `%LOG`         | Служит для входа                | `%LOG:email:password`              |
-| `%EXI`         | Служит для отключения           | `%EXI`                             |
-| `%UPM`         | Получить сообщении              | `%UPM:idChat:countMess`            |
-| `%NCT`         | Создания нового чата            | `%NCT:idUser`                      |
-| `%MSE`         | Отправить сообщение в от. чат   | `%MSE:idChat:textMess`             |
-| `%MES`         | Отправить сообщение в об. чат   | `%MES:textMess`                    |
-| `%INF`         | Получить инфо о аккаунте        | `%INF:idUser`                      |
-| `%DEL`         | Удалить аккаунт                 | `%DEL`                             |
-| `%SЕM`         | Отправить файл в об. чат        | `%SEM:textMess:fileName`           |
-| `%SMM`         | Отправить файл в от. чат        | `%SEM:textMess:fileName:idChat`    |
-| `%UUS`         | Обновление клиентов (онлайн)    | `%UUS`                             |
+| Название       | Описание	    		           | Пример                                |
+|----------------|---------------------------------|---------------------------------------|
+| `%REG`         | Служит для регистрации          | `%REG:email:password:nick:typeAvatar` |
+| `%LOG`         | Служит для входа                | `%LOG:email:password`                 |
+| `%EXI`         | Служит для отключения           | `%EXI`                                |
+| `%UPM`         | Получить сообщении              | `%UPM:idChat:countMess`               |
+| `%NCT`         | Создания нового чата            | `%NCT:idUser`                         |
+| `%MSE`         | Отправить сообщение в от. чат   | `%MSE:idChat:textMess`                |
+| `%MES`         | Отправить сообщение в об. чат   | `%MES:textMess`                       |
+| `%INF`         | Получить инфо о аккаунте        | `%INF:idUser`                         |
+| `%DEL`         | Удалить аккаунт                 | `%DEL`                                |
+| `%SЕM`         | Отправить файл в об. чат        | `%SEM:textMess:fileName`              |
+| `%SMM`         | Отправить файл в от. чат        | `%SEM:textMess:fileName:idChat`       |
+| `%UUS`         | Обновление клиентов (онлайн)    | `%UUS`                                |
 
 # Авторы
 

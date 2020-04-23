@@ -63,6 +63,16 @@ namespace GQChat.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Icon, аналогичного (Значок).
         /// </summary>
+        internal static System.Drawing.Icon GQchatpredl {
+            get {
+                object obj = ResourceManager.GetObject("GQchatpredl", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Icon, аналогичного (Значок).
+        /// </summary>
         internal static System.Drawing.Icon UpdateIco {
             get {
                 object obj = ResourceManager.GetObject("UpdateIco", resourceCulture);

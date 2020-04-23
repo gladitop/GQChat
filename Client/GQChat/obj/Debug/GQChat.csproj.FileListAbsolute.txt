@@ -39,3 +39,14 @@ C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\obj\Debug\GQChat.csprojAsse
 C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\bin\Debug\Newtonsoft.Json.dll
 C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\bin\Debug\Newtonsoft.Json.xml
 C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\obj\Debug\GQChat.csproj.CopyComplete
+C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\bin\Debug\Emoji.Wpf.dll
+C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\bin\Debug\LiveCharts.dll
+C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\bin\Debug\LiveCharts.Wpf.dll
+C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\bin\Debug\Typography.GlyphLayout.dll
+C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\bin\Debug\Typography.OpenFont.dll
+C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\bin\Debug\LiveCharts.pdb
+C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\bin\Debug\LiveCharts.xml
+C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\bin\Debug\LiveCharts.Wpf.pdb
+C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\bin\Debug\LiveCharts.Wpf.xml
+C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\obj\Debug\Other\Windows\Update.g.cs
+C:\Users\damal\Documents\GitHub\GQChat\Client\GQChat\obj\Debug\Other\Windows\Update.baml

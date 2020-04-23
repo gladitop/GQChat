@@ -38,32 +38,37 @@ namespace Server
         public class ClientConnectOffline//инфа о клиенте (офлайн) (ТОЛЬКО ДЛЯ СЕРВЕРА)
         {
             public ClientConnectOffline(long id, string nick, string passworld, UserAvatar userAvatar,
-                string email)
+                string email, bool offical)
             {
                 ID = id;
                 Nick = nick;
                 Passworld = passworld;
                 UserAvatar = userAvatar;
                 Email = email;
+                Offical = offical;
             }
 
             public long ID { get; set; }
             public string Nick { get; set; }
             public string Passworld { get; set; }
-            public UserAvatar UserAvatar { get; set; }
+            public UserAvatar UserAvatar { get; set; }//Аватарка
             public string Email { get; set; }
+            public bool Offical { get; set; }//Официальный аккаунт
         }
 
         public class IMessageInfoChat//Информация для отдельного чата
         {
-            public IMessageInfoChat(long lastId, string nameTable)
+            public IMessageInfoChat(long lastId, long id)
             {
                 LastID = lastId;
-                NameTable = nameTable;
+              //  NameTable = nameTable;
+                ID = id;
             }
 
             public long LastID { get; set; }//id последниго сообщение
-            public string NameTable { get; set; }//Имя таблицы в базе данных
+            //public string NameTable { get; set; }//Имя таблицы в базе данных
+            // {id1}:{id2} Вроде)
+            public long ID { get; set; }//Id этого чата
         }
 
         public enum UserAvatar// Тип аватарки клиента

@@ -50,10 +50,34 @@ namespace Server
 
             string email = GetClientEmail(id);
 
-            return new Data.ClientConnectOffline(id, nick, passworld, avatar, email);
+            //Offical
+
+            bool offical = GetClientOffical(id);
+
+            return new Data.ClientConnectOffline(id, nick, passworld, avatar, email, false);
 
             //return new Data.ClientConnectOffline(id, "Gladi", "324252", Data.UserAvatar.Avatar1,
             //    "gladi@gmail.com");
+        }
+
+        public static bool GetClientOffical(long id)
+        {
+            OleDbConnection connection = new OleDbConnection(ConnectCmd);
+            connection.Open();
+
+            OleDbCommand command = new OleDbCommand($"SELECT w_offical FROM w_accounts WHERE w_id = {id}",//Проверить!
+                connection);
+
+            string answer = command.ExecuteScalar().ToString();
+            connection.Close();
+
+            /*
+            if (bool.Parse("true") == bool.Parse(answer))
+            { return true; }
+            :))))))))))))))))))))))))))))))))))
+            */
+
+            return bool.Parse(answer);
         }
 
         public static string GetClientEmail(long id)

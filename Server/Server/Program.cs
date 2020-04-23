@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Runtime.DesignerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -237,13 +238,13 @@ namespace Server
 
         #region Разное
 
-        private static bool CheckClientOnly(Data.ClientConnectOffline clientoffline)//проверка клиента на онлайн
+        private static bool CheckClientOnly(long id)//проверка клиента на онлайн
         {
             bool check = false;//Для перебора и это ответ
 
             foreach (Data.ClientConnectOnly clientonly in Data.ClientsOnlyData)
             {
-                if (clientoffline.ID == clientoffline.ID)
+                if (clientonly.ID == id)
                 {
                     check = true;
                 }
@@ -251,12 +252,12 @@ namespace Server
 
             if (check)
             {
-                WriteLine($"Проверку на онлайн выполнил на (и нашёл) {clientoffline.ID}",
+                WriteLine($"Проверку на онлайн выполнил на (и нашёл) {id}",
     ConsoleColor.Green);
             }
             else
             {
-                WriteLine($"Проверку на онлайн выполнил на (и НЕ нашёл) {clientoffline.ID}",
+                WriteLine($"Проверку на онлайн выполнил на (и НЕ нашёл) {id}",
     ConsoleColor.Green);
 
             }
@@ -323,6 +324,8 @@ namespace Server
                     //Пример: %MES:Hello! (Ник мы уже знаем)
                     messi = onlyClient.ClientSocket.Client.Receive(buffer);
                     answer = Encoding.UTF8.GetString(buffer, 0, messi);
+                    WriteLine($"Получена команда {answer} от {onlyClient.Nick}:{onlyClient.ID}", 
+                        ConsoleColor.Green);
                 }
                 catch (Exception ex)
                 {
@@ -353,8 +356,6 @@ namespace Server
 
                     try
                     {
-                        WriteLine($"Выполнения запроса: '%NCT' от: {onlyClient.Nick}, {onlyClient.ID}",
-                                    ConsoleColor.Yellow);
                         Match regex = Regex.Match(answer, "%NCT:(.*)");
 
                         Database.CreateNewDialog(onlyClient.ID, long.Parse(regex.Groups[1].Value));
@@ -371,14 +372,55 @@ namespace Server
                 }
                 else if (answer.Contains("%MSE"))//Для отдельного чата (отправка)
                 {
-                    //TODO
+                    Match regex = Regex.Match(answer, "%MSE:(.*):(.*)");
+
+                    //id чата
+                    long idChat = long.Parse(regex.Groups[1].Value);
+
+                    //Сообщение
+                    string mess = regex.Groups[2].Value;
+
+                    //Обработка
+
+                    //Есть такой чат?
+
+                    var set = (Settings)Data.Settings;
+                    bool yesChat = false;
+                    foreach (Data.IMessageInfoChat chatInfo in set.MessageInfoChats)
+                    {
+                        if (chatInfo.ID == idChat)
+                        {
+                            yesChat = true;
+                        }
+                    }
+
+                    try
+                    {
+                        if (!yesChat)
+                        {
+                            WriteLine($"Есть такой чат! %MSE:{onlyClient.ID}", ConsoleColor.Red);
+                        }
+                        else
+                        {
+                            //Сама отправка сообщение
+                            //Если клиент онлайн, то отправляем нему
+
+                            long id1 = onlyClient.ID;
+                            long id2;
+
+                            //Поиск чата
+                            //TODO
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        WriteLine($"%MSE Ошибка: {ex.Message}", ConsoleColor.Red);
+                    }
                 }
                 else if (answer.Contains("%UPM"))//Отправить последнии сообщение (обновление сообщений) TODO
                 {
                     try
                     {
-                        WriteLine($"Выполнения запроса: '%UPM' от: {onlyClient.Nick}, {onlyClient.ID}",
-                            ConsoleColor.Yellow);
                         Match regex = Regex.Match(answer, "%UPM:(.*):(.*)");
                         long idChat = long.Parse(regex.Groups[1].Value);
                         long countMess = long.Parse(regex.Groups[2].Value);
@@ -404,7 +446,6 @@ namespace Server
                     {
                         onlyClient.ClientSocket.Close();
                         Data.ClientsOnlyData.Remove(onlyClient);
-                        WriteLine($"Команда %EXI от {onlyClient.ID}:{onlyClient.Nick}", ConsoleColor.Green);
                         return;
                     }
                     catch
@@ -427,17 +468,21 @@ namespace Server
 
                         if (client.UserAvatar != Data.UserAvatar.Custom)
                         {
-                            bool status = CheckClientOnly(client);
+                            bool status = CheckClientOnly(client.ID);
 
                             buffer = Encoding.UTF8.GetBytes($"%INF:{client.ID}:{client.Nick}:{status}:" +
                                 $"{client.Email}");
+
+                            onlyClient.ClientSocket.Client.Send(buffer);
                         }
                         else
                         {
                             Data.ClientConnectOffline offline = Database.GetClientInfo(idClient);//Проверить!
-
+                            //TODO: Вот тут просто отправлять аватарку
 
                         }
+                        WriteLine($"Команда %INF от {onlyClient.Nick}:{onlyClient.ID} выполнена",
+                            ConsoleColor.Green);
                     }
                     catch
                     {
@@ -479,9 +524,6 @@ namespace Server
                 }
                 else if (answer.Contains("%UAT"))//Загрузка (обновление) аватарки клиента
                 {
-                    WriteLine($"Получение аватарки от {onlyClient.ID}:{onlyClient.Nick}...",
-                        ConsoleColor.Yellow);
-
                     //%UAT:typeAvatar:sizeFile
                     Match regex = Regex.Match(answer, "%UAT:(.*):(.*)");
                     Data.UserAvatar userAvatar = (Data.UserAvatar)short.Parse(regex.Groups[1].Value);
@@ -519,6 +561,7 @@ namespace Server
                     {
                         //%ERR:CommandIsNot - Такой команды нет
                         onlyClient.ClientSocket.Client.Send(Encoding.UTF8.GetBytes("%ERR:CommandIsNot"));
+                        WriteLine("Такой команды нет!", ConsoleColor.Red);
                     }
                     catch
                     {
