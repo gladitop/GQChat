@@ -6,12 +6,16 @@ namespace Server
 {
     public class Settings
     {
-        [JsonProperty("lastId")]
-        public long LastId { get; set; }//Последний id
+        [JsonProperty("lastIdUser")]
+        public long LastIdUser { get; set; }//Последний id пользователя
 
         [JsonProperty("lastIdMessagesMain")]
         public long LastIdMessMain { get; set; }//Последний id сообщение (в общем чате)
 
+        [JsonProperty("lastIdChat")]
+        public long LastIdChat { get; set; }//Последний id чата
+
+        //Списки
         [JsonProperty("messageInfoChats")]
         public List<Data.IMessageInfoChat> MessageInfoChats { get; set; }//Информация для отдельных чатов
     }
@@ -26,7 +30,7 @@ namespace Server
             {
                 Data.Settings = new Settings()
                 {
-                    LastId = 0,
+                    LastIdUser = 0,
                     LastIdMessMain = 0,
                     MessageInfoChats = new List<Data.IMessageInfoChat>()
                 };
@@ -46,7 +50,7 @@ namespace Server
 
             Settings set = new Settings()
             {
-                LastId = settings.LastId,
+                LastIdUser = settings.LastIdUser,
                 LastIdMessMain = settings.LastIdMessMain,
                 MessageInfoChats = settings.MessageInfoChats
             };

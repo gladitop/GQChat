@@ -14,6 +14,7 @@ namespace Server
 
         public const string ConnectCmd = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=GladiData.MDB;";
 
+
         public static void CreateNewDialog(long idClient, long idClient2)//Создание диалога
         {
             var setting = (Settings)Data.Settings;
@@ -24,7 +25,8 @@ namespace Server
                 $" w_nick STRING)"
                 , connection);
 
-            setting.MessageInfoChats.Add(new Data.IMessageInfoChat(0, $"w_{idClient}_{idClient2}"));
+            setting.MessageInfoChats.Add(new Data.IMessageInfoChat(0, $"w_{idClient}_{idClient2}", setting.LastIdChat,
+                idClient, idClient2));
             Data.Settings = setting;
             
             SettingsManager.Save();
@@ -237,7 +239,7 @@ namespace Server
             */
 
             Settings set = (Settings)Data.Settings;
-            return set.LastId;
+            return set.LastIdUser;
         }
 
         public static void AccountAdd(string email, string passworld, string nick, long id, int avatar, bool offical)//Добавить в аккаунт ERROR

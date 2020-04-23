@@ -157,8 +157,8 @@ namespace Server
             WriteLine("Подождите...", ConsoleColor.Yellow);
 
             var settings = (Settings)Data.Settings;
-            Data.ClientConnectOffline[] clientsCheck = new Data.ClientConnectOffline[settings.LastId];
-            for (int i = 0; i <= settings.LastId; i++)
+            Data.ClientConnectOffline[] clientsCheck = new Data.ClientConnectOffline[settings.LastIdUser];
+            for (int i = 0; i <= settings.LastIdUser; i++)
             {
                 clientsCheck[i] = Database.GetClientInfo(i);
             }
@@ -318,6 +318,7 @@ namespace Server
             while (true)
             {
                 Task.Delay(10).Wait();
+                linkStartListenCommand:
 
                 try
                 {
@@ -403,13 +404,68 @@ namespace Server
                         else
                         {
                             //Сама отправка сообщение
-                            //Если клиент онлайн, то отправляем нему
-
-                            long id1 = onlyClient.ID;
-                            long id2;
+                            //Если клиент онлайн, то отправляем нему что есть новое сообщение
 
                             //Поиск чата
-                            //TODO
+
+                            Data.IMessageInfoChat infoChat = new Data.IMessageInfoChat(null);
+                            foreach (Data.IMessageInfoChat messageInfo in set.MessageInfoChats)
+                            {
+                                if (messageInfo.ID == idChat)
+                                {
+                                    infoChat = messageInfo;
+                                }
+                            }
+
+                            if (infoChat.NameTable == null)
+                            {
+                                onlyClient.ClientSocket.Client.Send(Encoding.UTF8.GetBytes("%ERROR:NotHaveChat"));
+                                //%ERROR:NotHaveChat Если нет чата
+                                goto linkStartListenCommand; 
+                            }
+
+                            //Обработка данных
+
+                            var id1 = new Data.InfoClientMessInfoChat();//Сам наш клиент
+                            var id2 = new Data.InfoClientMessInfoChat();//А это получатель
+                            //или подругому)
+
+                            if (infoChat.ID1 == onlyClient.ID)
+                            { 
+                                id1 = new Data.InfoClientMessInfoChat(onlyClient.ID, Data.TypeUserInfoMess.Sender);
+                                id2 = new Data.InfoClientMessInfoChat(infoChat.ID, Data.TypeUserInfoMess.Recipient);
+                            }
+
+                            //Анализ клиента
+
+                            if (id2.TypeClient == Data.TypeUserInfoMess.Recipient)
+                            {
+                                if (CheckClientOnly(id2.ID))
+                                {
+                                    //Получение socket
+
+                                    Data.ClientConnectOnly clientId2 = new Data.ClientConnectOnly();
+
+                                    //foreach (Data.ClientConnectOnly temp in Data.ClientConnectOnly)
+                                    //{
+                                    // Странная ошибка
+                                    //}
+                                }
+                            }
+                            else
+                            {
+                                if (CheckClientOnly(id1.ID))
+                                {
+                                    //Получение socket
+
+                                    Data.ClientConnectOnly clientId1 = new Data.ClientConnectOnly();
+
+                                    //foreach (Data.ClientConnectOnly temp in Data.ClientConnectOnly)
+                                    //{
+                                    // Странная ошибка
+                                    //}
+                                }
+                            }
                         }
                     }
                     catch (Exception ex)
@@ -667,8 +723,8 @@ namespace Server
                 {
                     Console.WriteLine("1");
                     Settings set = (Settings)Data.Settings;
-                    set.LastId = Database.GetLastIdAccount() + 1;
-                    Database.AccountAdd(email, passworld, nick, set.LastId, avatar, false);
+                    set.LastIdUser = Database.GetLastIdAccount() + 1;
+                    Database.AccountAdd(email, passworld, nick, set.LastIdUser, avatar, false);
                     client.Client.Send(Encoding.UTF8.GetBytes("%REGOD"));
 
                     WriteLine($"Новый аккаунт! {email}, {passworld}", ConsoleColor.Green);

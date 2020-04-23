@@ -165,5 +165,14 @@
   <ItemGroup>
     <Resource Include="Resources\GQchatpredl.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\avatar1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\avatar2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\avatar3.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
