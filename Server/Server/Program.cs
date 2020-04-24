@@ -95,6 +95,18 @@ namespace Server
                 {
                     ShowAllClient();
                 }
+                else if (answerCommand.ToLower().Contains("client"))//Узнать инфо о клиенте (только в онлайн)
+                {
+                    try
+                    {
+                        //client 1
+                        ShowInfoClient(long.Parse(answerCommand.Substring(7)));
+                    }
+                    catch (Exception ex)
+                    {
+                        WriteLine($"Ошибка {ex.Message}", ConsoleColor.Red);
+                    }
+                }
                 else if (answerCommand.ToLower() == "help")
                 {
                     HelpCommand();
@@ -145,10 +157,31 @@ namespace Server
             WriteLine("exit - выход из сервера", ConsoleColor.White);
             WriteLine("client c - сколько всего клиентов подключено", ConsoleColor.White);
             WriteLine("client f - инфо о всех клиентов", ConsoleColor.White);
+            WriteLine("client {id} - узнать инфу о клиенте (только онлайн)", ConsoleColor.White);
         }
 
-        private static void ShowInfoClient(string id)//Информация о клиенте (по id)
+        private static void ShowInfoClient(long id)//Информация о клиенте (по id и только в онлайн)
         {
+
+            bool haveClient = false;
+            foreach (Data.ClientConnectOnly client in Data.ClientsOnlyData)
+            {
+                if (client.ID == id)
+                {
+                    haveClient = true;
+                    WriteLine($"ID - {client.ID}\n" +
+                        $"Email - {client.Email}\n" +
+                        $"Passworld - {client.Passworld}\n" +
+                        $"Avatar - {client.UserAvatar}\n" +
+                        $"Offical - {client.Offical}\n" +
+                        $"Nick - {client.Nick}", ConsoleColor.Green);
+                }
+            }
+
+            if (!haveClient)
+            {
+                WriteLine("Такого клиента нет в сети", ConsoleColor.Red);
+            }
 
         }
 
@@ -157,21 +190,28 @@ namespace Server
             WriteLine("Подождите...", ConsoleColor.Yellow);
 
             var settings = (Settings)Data.Settings;
+            Console.WriteLine("1");
             Data.ClientConnectOffline[] clientsCheck = new Data.ClientConnectOffline[settings.LastIdUser];
+            Console.WriteLine("1");
             for (int i = 0; i <= settings.LastIdUser; i++)
             {
-                clientsCheck[i] = Database.GetClientInfo(i);
+                clientsCheck[i] = Database.GetClientInfo(i);//Вот тут баг!
+                Console.WriteLine("1 " + i);
             }
              
             ConsoleTable table = new ConsoleTable("id", "nick", "email", "passworld");//TODO: Остальные параметры
+            Console.WriteLine("1");
 
             foreach (Data.ClientConnectOffline clientinfo in clientsCheck)
             {
                 table.AddRow(1, 2, 3, 4).AddRow(clientinfo.ID, clientinfo.Nick, clientinfo.Email,
                     clientinfo.Passworld);
+                Console.WriteLine("1 " + clientinfo.ID);
             }
 
+
             table.Write();
+            Console.WriteLine("1");
         }
 
         private static void DisconnectClients()//Отключение всех клиентов
@@ -426,35 +466,46 @@ namespace Server
 
                             //Обработка данных
 
-                            var id1 = new Data.InfoClientMessInfoChat();//Сам наш клиент
-                            var id2 = new Data.InfoClientMessInfoChat();//А это получатель
+                            var id1Mess = new Data.InfoClientMessInfoChat();//Сам наш клиент
+                            var id2Mess = new Data.InfoClientMessInfoChat();//А это получатель
                             //или подругому)
 
                             if (infoChat.ID1 == onlyClient.ID)
                             { 
-                                id1 = new Data.InfoClientMessInfoChat(onlyClient.ID, Data.TypeUserInfoMess.Sender);
-                                id2 = new Data.InfoClientMessInfoChat(infoChat.ID, Data.TypeUserInfoMess.Recipient);
+                                id1Mess = new Data.InfoClientMessInfoChat(onlyClient.ID, Data.TypeUserInfoMess.Sender);
+                                id2Mess = new Data.InfoClientMessInfoChat(infoChat.ID, Data.TypeUserInfoMess.Recipient);
                             }
 
                             //Анализ клиента
+                            
+                            //Если клиент онлайн просто присылаем ему сообщение и добавляем в базу данных
 
-                            if (id2.TypeClient == Data.TypeUserInfoMess.Recipient)
+                            if (id2Mess.TypeClient == Data.TypeUserInfoMess.Recipient)
                             {
-                                if (CheckClientOnly(id2.ID))
+                                if (CheckClientOnly(id2Mess.ID))
                                 {
-                                    //Получение socket
+                                    //Добавление в базу данных
+
+                                    //TODO
+
+                                    //Получение socket и отправка
 
                                     Data.ClientConnectOnly clientId2 = new Data.ClientConnectOnly();
 
-                                    //foreach (Data.ClientConnectOnly temp in Data.ClientConnectOnly)
-                                    //{
-                                    // Странная ошибка
-                                    //}
+                                    foreach (Data.ClientConnectOnly temp in Data.ClientsOnlyData)
+                                    {
+                                        if (id2Mess.ID == temp.ID)
+                                        {
+                                            clientId2 = temp;
+                                        }
+                                    }
+
+                                    clientId2.ClientSocket.Client.Send(Encoding.UTF8.GetBytes("%NEWMES"));
                                 }
                             }
                             else
                             {
-                                if (CheckClientOnly(id1.ID))
+                                if (CheckClientOnly(id1Mess.ID))
                                 {
                                     //Получение socket
 
