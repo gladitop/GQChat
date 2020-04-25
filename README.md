@@ -30,6 +30,7 @@
 * .Net Framework 4.8
 * WPF
 * Unity ***(Меня заставил*** [Qliook](https://github.com/Qliook)***)***
+* Olebd
 
 ## NuGet пакеты
 
@@ -63,6 +64,12 @@ licensed work, under the same license. Copyright and license
 notices must be preserved. Contributors provide an express grant of 
 patent rights.
 ```
+
+Ссылки
+
+![Детали](https://github.com/gladitop/GQChat/blob/master/Other/Agreement/Details.txt)
+![Распространить](https://github.com/gladitop/GQChat/blob/master/Other/Agreement/Spread.txt)
+![Сама лицензия](https://github.com/gladitop/GQChat/blob/master/LICENSE)
 
 # Команды сервера
 
