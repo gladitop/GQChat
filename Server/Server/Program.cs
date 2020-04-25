@@ -4,8 +4,6 @@ using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Runtime.DesignerServices;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -126,13 +124,19 @@ namespace Server
         {
             WriteLine("Подождите...", ConsoleColor.Yellow);
 
-            ConsoleTable table = new ConsoleTable("id", "nick", "email", "passworld");
+            ConsoleTable table = new ConsoleTable("id", "nick", "email", "passworld", "offical", "avatar");
 
             foreach (Data.ClientConnectOnly clientinfo in Data.ClientsOnlyData)//Проблема!
             {
-                table.AddRow(1, 2, 3, 4).AddRow(clientinfo.ID, clientinfo.Nick.ToString(),
-                    clientinfo.Email.ToString(),
-                    clientinfo.Passworld.ToString());
+                Console.WriteLine(clientinfo.ID);
+                Console.WriteLine(clientinfo.Nick);
+                Console.WriteLine(clientinfo.Email);
+                Console.WriteLine(clientinfo.Passworld);
+                Console.WriteLine(clientinfo.Offical);
+                Console.WriteLine(clientinfo.UserAvatar);
+                table.AddRow(1, 2, 3, 4).AddRow(clientinfo.ID, clientinfo.Nick,
+                    clientinfo.Email,
+                    clientinfo.Passworld, clientinfo.Offical, clientinfo.UserAvatar);
             }
             table.AddRow(1, 2, 3, 4).AddRow("1", "Gladi", "gladi@gmail.com",
                     "АнтонЗлой!");
@@ -198,7 +202,7 @@ namespace Server
                 clientsCheck[i] = Database.GetClientInfo(i);//Вот тут баг!
                 Console.WriteLine("1 " + i);
             }
-             
+
             ConsoleTable table = new ConsoleTable("id", "nick", "email", "passworld");//TODO: Остальные параметры
             Console.WriteLine("1");
 
@@ -358,14 +362,14 @@ namespace Server
             while (true)
             {
                 Task.Delay(10).Wait();
-                linkStartListenCommand:
+            linkStartListenCommand:
 
                 try
                 {
                     //Пример: %MES:Hello! (Ник мы уже знаем)
                     messi = onlyClient.ClientSocket.Client.Receive(buffer);
                     answer = Encoding.UTF8.GetString(buffer, 0, messi);
-                    WriteLine($"Получена команда {answer} от {onlyClient.Nick}:{onlyClient.ID}", 
+                    WriteLine($"Получена команда {answer} от {onlyClient.Nick}:{onlyClient.ID}",
                         ConsoleColor.Green);
                 }
                 catch (Exception ex)
@@ -376,14 +380,18 @@ namespace Server
                     return;
                 }
 
-                if (answer.Contains("%MES"))//Для общего чата
+                if (answer.Contains("%MES"))//Для общего чата (отправка сообщения)
                 {
                     try
                     {
                         Match regex = Regex.Match(answer, "%MES:(.*)");
                         string messagesText = regex.Groups[1].Value;
 
+                        //Сама отправка сообщения
                         MessagesMain(messagesText, onlyClient);
+
+                        //Добавление в базу данных
+                        Database.AddMessageInMainChat(messagesText, onlyClient.ID);
                     }
                     catch
                     {
@@ -461,7 +469,7 @@ namespace Server
                             {
                                 onlyClient.ClientSocket.Client.Send(Encoding.UTF8.GetBytes("%ERROR:NotHaveChat"));
                                 //%ERROR:NotHaveChat Если нет чата
-                                goto linkStartListenCommand; 
+                                goto linkStartListenCommand;
                             }
 
                             //Обработка данных
@@ -471,13 +479,13 @@ namespace Server
                             //или подругому)
 
                             if (infoChat.ID1 == onlyClient.ID)
-                            { 
+                            {
                                 id1Mess = new Data.InfoClientMessInfoChat(onlyClient.ID, Data.TypeUserInfoMess.Sender);
                                 id2Mess = new Data.InfoClientMessInfoChat(infoChat.ID, Data.TypeUserInfoMess.Recipient);
                             }
 
                             //Анализ клиента
-                            
+
                             //Если клиент онлайн просто присылаем ему сообщение и добавляем в базу данных
 
                             if (id2Mess.TypeClient == Data.TypeUserInfoMess.Recipient)
@@ -531,6 +539,7 @@ namespace Server
                         Match regex = Regex.Match(answer, "%UPM:(.*):(.*)");
                         long idChat = long.Parse(regex.Groups[1].Value);
                         long countMess = long.Parse(regex.Groups[2].Value);
+                        //id 0 это главный чат
 
                         for (long Iupm = 0; Iupm < countMess; Iupm++)
                         {
@@ -601,7 +610,19 @@ namespace Server
                 {
                     //Подтверждение (пароль)
 
+                    messi = onlyClient.ClientSocket.Client.Receive(buffer);
+                    answer = Encoding.UTF8.GetString(buffer, 0, messi);
 
+                    //TODO md5
+
+                    //неверный пароль
+                    if (answer != onlyClient.Passworld)
+                    {
+                        onlyClient.ClientSocket.Client.Send(Encoding.UTF8.GetBytes("%ERRPASSWORLD"));
+                        goto linkStartListenCommand;
+                    }
+
+                    //TODO
                 }
                 else if (answer.Contains("%SЕM"))//Отправить файл (Сообщение) (( В общий чат ))
                 {
@@ -635,11 +656,12 @@ namespace Server
                     Match regex = Regex.Match(answer, "%UAT:(.*):(.*)");
                     Data.UserAvatar userAvatar = (Data.UserAvatar)short.Parse(regex.Groups[1].Value);
 
+                    //Обновление аватарки
                     if (File.Exists($@"Avatars\{onlyClient.ID}.png"))
                         File.Delete($@"Avatars\{onlyClient.ID}.png");
 
                     if (userAvatar == Data.UserAvatar.Custom)
-                    { 
+                    {
                         /*Инфа о файле
                         (Максимальный размер 8 мб)*/
 

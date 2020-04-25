@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Resources;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 // Общие сведения об этой сборке предоставляются следующим набором
@@ -7,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Server")]
 [assembly: AssemblyDescription("Это сервер для сата GQChat")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("GQChat")]
 [assembly: AssemblyProduct("GQChat: Server")]
 [assembly: AssemblyCopyright("Copyright © Damir Maratovich Almaev 2020")]
 [assembly: AssemblyTrademark("GQChat")]
@@ -33,3 +34,4 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0")]
 [assembly: AssemblyFileVersion("1.0")]
+[assembly: NeutralResourcesLanguage("ru-RU")]

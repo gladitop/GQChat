@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Data.OleDb;
 
 namespace Server
@@ -14,6 +13,24 @@ namespace Server
 
         public const string ConnectCmd = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=GladiData.MDB;";
 
+        public static void AddMessageInMainChat(string messtext, long iduser)//Добавить сообщение в общий чат
+        {
+            try
+            {
+                OleDbConnection connection = new OleDbConnection(ConnectCmd);
+                connection.Open();
+
+                OleDbCommand command = new OleDbCommand($"INSERT INTO w_main_chat (w_id_message, w_text_message, w_id_user) " +
+                    $"VALUES ('{messtext}', {iduser})", connection);
+
+                command.ExecuteNonQuery();
+                connection.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message + " Добавить аккаунт");
+            }
+        }
 
         public static void CreateNewDialog(long idClient, long idClient2)//Создание диалога
         {
@@ -28,7 +45,7 @@ namespace Server
             setting.MessageInfoChats.Add(new Data.IMessageInfoChat(0, $"w_{idClient}_{idClient2}", setting.LastIdChat,
                 idClient, idClient2));
             Data.Settings = setting;
-            
+
             SettingsManager.Save();
             command.ExecuteNonQuery();
             connection.Close();
@@ -111,6 +128,7 @@ namespace Server
             OleDbCommand command = new OleDbCommand($"SELECT w_pasworld FROM w_accounts WHERE w_id = {id}",//Проверить!
                 connection);
 
+            //Отсутствует значение для одного или нескольких требуемых параметров
             string answer = command.ExecuteScalar().ToString();
             connection.Close();
 
@@ -160,8 +178,12 @@ namespace Server
             OleDbCommand command = new OleDbCommand($"SELECT w_nick FROM w_accounts WHERE w_id = {id}",//Проверить!
                 connection);
 
-            string answer = command.ExecuteScalar().ToString();
+            string answer = Convert.ToString(command.ExecuteScalar());
             connection.Close();
+
+            //Чтобы не было исключение
+            if (string.IsNullOrWhiteSpace(answer))
+                answer = "";
 
             return answer;
         }
@@ -251,7 +273,6 @@ namespace Server
 
                 OleDbCommand command = new OleDbCommand($"INSERT INTO w_accounts (w_id, w_email, w_passworld, w_nick, w_avatar, w_offical)" +
                     $" VALUES ({id}, '{email}', '{passworld}', '{nick}', {avatar}, {offical})", connection);//Новые параметры!
-                //-1 это true, а 0 это false
 
                 command.ExecuteNonQuery();
                 connection.Close();
