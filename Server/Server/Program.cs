@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -282,6 +283,12 @@ namespace Server
 
         #region Разное
 
+        public static string SHA256(string text) {
+            using (var s = SHA256Managed.Create())
+            {
+                return BitConverter.ToString(s.ComputeHash(Encoding.UTF8.GetBytes(text))).Replace("-", "");
+            }
+        }
         private static bool CheckClientOnly(long id)//проверка клиента на онлайн
         {
             bool check = false;//Для перебора и это ответ
@@ -714,7 +721,7 @@ namespace Server
         private static void CheckNewConnect(object i)//Проверка нового подключения
         {
             WriteLine("Новое подключение!", ConsoleColor.Green);
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[4098];
             TcpClient client = (TcpClient)i;
             //NetworkStream networkClient = client.GetStream();
 
@@ -753,7 +760,14 @@ namespace Server
             Task.Delay(100).Wait();
 
             //messi = client.Receive(buffer);
-            messi = client.Client.Receive(buffer);
+            try
+            {
+                messi = client.Client.Receive(buffer);
+            } catch
+            {
+                WriteLine("Клиент "+ ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString() + " отключён.", ConsoleColor.Yellow);
+                return;
+            }
             string answer = Encoding.UTF8.GetString(buffer, 0, messi);
             WriteLine("Проверка нового подклюение...", ConsoleColor.Yellow);
 
@@ -769,7 +783,9 @@ namespace Server
 
                 //пароль
 
-                string passworld = regex.Groups[2].Value;//TODO: Нужен md5
+                string pValue = regex.Groups[2].Value;
+                if (pValue.Length > 64 || pValue.Length < 4) return; //Фикс длинных/коротких паролей
+                string passworld = SHA256(pValue); //Фикс CWE-257
                 Console.WriteLine(passworld);
 
                 //Nick

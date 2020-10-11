@@ -21,7 +21,7 @@ namespace Server
                 connection.Open();
 
                 OleDbCommand command = new OleDbCommand($"INSERT INTO w_main_chat (w_id_message, w_text_message, w_id_user) " +
-                    $"VALUES ('{messtext}', {iduser})", connection);
+                    $"VALUES ('{messtext}', {iduser})", connection); //This line is vulnerable to SQL injections. Please, use OleDbCommand.Parameters in future
 
                 command.ExecuteNonQuery();
                 connection.Close();
@@ -40,7 +40,7 @@ namespace Server
 
             OleDbCommand command = new OleDbCommand($"CREATE TABLE w_{idClient}_{idClient2} (w_message STRING" +
                 $" w_nick STRING)"
-                , connection);
+                , connection); //This line is vulnerable to SQL injections. Please, use OleDbCommand.Parameters in future
 
             setting.MessageInfoChats.Add(new Data.IMessageInfoChat(0, $"w_{idClient}_{idClient2}", setting.LastIdChat,
                 idClient, idClient2));
